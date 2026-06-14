@@ -70,7 +70,7 @@ export interface Hero {
 }
 
 export const HERO: Hero = {
-  title: "Nie widzisz jej. Czujesz ją codziennie.",
+  title: "Nie widzisz jej. Czujesz codziennie",
   subtitle:
     "Mały element w Twoim oknie, który ma wielki wpływ. Zmniejsza straty ciepła o 22%.",
   cta: "Poznaj FIBERTHERM",
@@ -112,18 +112,24 @@ export const MATERIALS: Material[] = [
 /*  Rynki / kraje obecności                                                    */
 /* -------------------------------------------------------------------------- */
 
-export const COUNTRIES: string[] = [
-  "Polska",
-  "Włochy",
-  "Ukraina",
-  "Bułgaria",
-  "Portugalia",
-  "Kanada",
-  "Korea",
-  "Rumunia",
-  "Kosowo",
-  "Niemcy",
-  "i wiele innych",
+export interface Country {
+  name: string;
+  flag: string;
+  iso2: string;
+}
+
+export const COUNTRIES: Country[] = [
+  { name: "Polska", flag: "🇵🇱", iso2: "PL" },
+  { name: "Włochy", flag: "🇮🇹", iso2: "IT" },
+  { name: "Ukraina", flag: "🇺🇦", iso2: "UA" },
+  { name: "Bułgaria", flag: "🇧🇬", iso2: "BG" },
+  { name: "Portugalia", flag: "🇵🇹", iso2: "PT" },
+  { name: "Kanada", flag: "🇨🇦", iso2: "CA" },
+  { name: "Korea Południowa", flag: "🇰🇷", iso2: "KR" },
+  { name: "Rumunia", flag: "🇷🇴", iso2: "RO" },
+  { name: "Kosowo", flag: "🇽🇰", iso2: "XK" },
+  { name: "Niemcy", flag: "🇩🇪", iso2: "DE" },
+  { name: "i wiele innych", flag: "🌍", iso2: "" },
 ];
 
 /* -------------------------------------------------------------------------- */

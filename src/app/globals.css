@@ -190,3 +190,47 @@ html.lenis body {
     scroll-behavior: auto;
   }
 }
+
+/* JS-fallback: if motion library fails to hydrate (chunk error, slow network),
+   these elements remain invisible. Force them visible after a short delay. */
+@supports (animation-timeline: view()) {
+  [style*="opacity:0"] {
+    animation: hermes-fallback-show 0.01s 1.5s forwards !important;
+  }
+}
+@keyframes hermes-fallback-show {
+  to { opacity: 1 !important; transform: none !important; }
+}
+
+/* Hero copy fade-in (CSS, no JS dep) */
+@keyframes hero-copy-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-copy-in {
+  animation: hero-copy-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+}
+
+/* Hero scroll affordance (CSS, no JS dep) */
+@keyframes hero-affordance-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.hero-affordance {
+  animation: hero-affordance-in 0.8s ease-out 1.4s both;
+}
+@keyframes scroll-line-pulse {
+  0%, 100% { transform: scaleY(0.35); }
+  50%      { transform: scaleY(1); }
+}
+.scroll-line {
+  transform-origin: top center;
+  animation: scroll-line-pulse 2.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-copy-in, .hero-affordance, .scroll-line {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

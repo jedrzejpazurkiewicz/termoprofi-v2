@@ -1,103 +1,368 @@
 "use client";
 
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
 import Section from "@/components/ui/Section";
 import Button from "@/components/ui/Button";
+import FormInput, { FormTextarea } from "@/components/ui/FormInput";
 import ScrollReveal from "@/components/animations/ScrollReveal";
-import { SITE } from "@/lib/constants";
+import { SITE, CONTACT_COPY } from "@/lib/constants";
 
-/**
- * Contact — placeholder shell. The contact section pairs the company's real
- * coordinates (from constants) with a form skeleton. The form is intentionally
- * inert for now — validation (zod + react-hook-form) and delivery (resend) are
- * wired in a later pass — but it is fully semantic and accessible so it reads as
- * finished, not broken.
- */
+/* -------------------------------------------------------------------------- */
+/*  Walidacja formularza — lustro schematu z route.ts                          */
+/* -------------------------------------------------------------------------- */
 
-const FIELDS = [
-  { id: "name", label: "Imię i nazwisko", type: "text", autoComplete: "name" },
-  { id: "email", label: "Adres e-mail", type: "email", autoComplete: "email" },
-  { id: "company", label: "Firma", type: "text", autoComplete: "organization" },
+const PURPOSE_OPTIONS = [
+  { value: "catalog", label: "Katalog i próbki" },
+  { value: "meeting", label: "Spotkanie / konsultacja" },
+  { value: "general", label: "Zapytanie ogólne" },
 ] as const;
 
-export default function Contact() {
-  return (
-    <Section id="kontakt" eyebrow="Kontakt" variant="dark">
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-        {/* Coordinates — final content. */}
-        <ScrollReveal>
-          <div>
-            <h2 className="text-balance font-jost text-display-sm font-bold text-ink">
-              Porozmawiajmy o ciepłej krawędzi.
-            </h2>
-            <p className="mt-6 max-w-prose text-pretty text-lg leading-relaxed text-ink-2">
-              Dobierzemy rozwiązanie do Twojej produkcji i przygotujemy ofertę.
-            </p>
+const contactSchema = z.object({
+  name: z.string().trim().min(2, "Podaj imię (min. 2 znaki)."),
+  email: z.string().trim().email("Podaj poprawny adres e-mail."),
+  phone: z.string().trim().min(9, "Podaj poprawny numer telefonu."),
+  company: z.string().trim().optional().or(z.literal("")),
+  purpose: z.enum(["catalog", "meeting", "general"]),
+  message: z.string().trim().min(10, "Napisz nieco więcej (min. 10 znaków)."),
+  /** Honeypot — niewidoczny dla ludzi, wypełniany przez boty. */
+  website: z.string().max(0).optional().or(z.literal("")),
+});
 
-            <dl className="mt-10 flex flex-col gap-6 text-sm">
-              <div className="flex flex-col gap-1">
-                <dt className="text-eyebrow uppercase text-ink-2">Adres</dt>
-                <dd className="text-ink">
-                  {SITE.company}
-                  <br />
-                  {SITE.address}
-                </dd>
-              </div>
-              <div className="flex flex-col gap-1">
-                <dt className="text-eyebrow uppercase text-ink-2">Telefon</dt>
-                <dd>
+type ContactValues = z.infer<typeof contactSchema>;
+
+type Status = "idle" | "loading" | "success" | "error";
+
+/* -------------------------------------------------------------------------- */
+/*  Drobne elementy UI                                                         */
+/* -------------------------------------------------------------------------- */
+
+const selectLabel = "mb-2 block font-inter text-sm font-medium text-ink-2";
+const selectField =
+  "w-full appearance-none rounded-xl border border-hairline bg-white/[0.02] px-4 py-3.5 pr-11 font-inter text-[0.95rem] text-ink transition-colors duration-300 ease-calm focus:border-tp-red/60 focus:bg-white/[0.04] focus:outline-none disabled:opacity-50";
+
+function Spinner() {
+  return (
+    <span
+      aria-hidden
+      className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+    />
+  );
+}
+
+function InfoRow({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="border-t border-hairline pt-5">
+      <p className="text-eyebrow uppercase text-ink-2">{label}</p>
+      <div className="mt-2 font-inter text-ink">{children}</div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Sekcja                                                                      */
+/* -------------------------------------------------------------------------- */
+
+export function Contact() {
+  const [status, setStatus] = useState<Status>("idle");
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ContactValues>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      company: "",
+      purpose: "catalog",
+      message: "",
+      website: "",
+    },
+  });
+
+  const onSubmit = async (values: ContactValues) => {
+    setStatus("loading");
+    setServerError(null);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      const data: { success?: boolean; error?: string } = await res
+        .json()
+        .catch(() => ({}));
+
+      if (res.ok && data.success) {
+        setStatus("success");
+        reset();
+        return;
+      }
+
+      setServerError(data.error ?? CONTACT_COPY.error);
+      setStatus("error");
+    } catch {
+      setServerError(CONTACT_COPY.error);
+      setStatus("error");
+    }
+  };
+
+  const isLoading = status === "loading";
+
+  return (
+    <Section
+      id="kontakt"
+      variant="dark"
+      eyebrow={CONTACT_COPY.eyebrow}
+      className="overflow-hidden"
+    >
+      {/* Atmosferyczny akcent tła */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-40 top-10 h-[28rem] w-[28rem] rounded-full bg-tp-red/10 blur-[150px]"
+      />
+
+      <div className="relative grid gap-x-16 gap-y-14 lg:grid-cols-[0.9fr_1.1fr]">
+        {/* ----------------------------- LEWA: dane ---------------------------- */}
+        <ScrollReveal className="flex flex-col">
+          <h2 className="max-w-md text-balance font-jost text-display-sm font-medium leading-[1.05] tracking-tight text-ink">
+            {CONTACT_COPY.title}
+          </h2>
+          <p className="mt-6 max-w-md text-pretty font-inter text-lg leading-relaxed text-ink-2">
+            {CONTACT_COPY.subtitle}
+          </p>
+
+          <div className="mt-12 flex flex-col gap-6">
+            <InfoRow label="Adres">
+              <p className="leading-relaxed">
+                {SITE.company}
+                <br />
+                {SITE.street}
+                <br />
+                {SITE.city}
+              </p>
+            </InfoRow>
+
+            <InfoRow label="Telefon">
+              <a
+                href={SITE.phoneHref}
+                className="transition-colors duration-300 ease-calm hover:text-tp-red"
+              >
+                {SITE.phone}
+              </a>
+            </InfoRow>
+
+            <InfoRow label="E-mail">
+              <a
+                href={`mailto:${SITE.email}`}
+                className="transition-colors duration-300 ease-calm hover:text-tp-red"
+              >
+                {SITE.email}
+              </a>
+            </InfoRow>
+
+            <InfoRow label="Social media">
+              <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink-2">
+                {SITE.socials.map((social) => (
                   <a
-                    href={`tel:${SITE.phone.replace(/\s+/g, "")}`}
-                    className="text-ink transition-colors hover:text-tp-red"
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="transition-colors duration-300 ease-calm hover:text-ink"
                   >
-                    {SITE.phone}
+                    {social.label}
                   </a>
-                </dd>
+                ))}
               </div>
-              <div className="flex flex-col gap-1">
-                <dt className="text-eyebrow uppercase text-ink-2">E-mail</dt>
-                <dd>
-                  <a
-                    href={`mailto:${SITE.email}`}
-                    className="text-ink transition-colors hover:text-tp-red"
-                  >
-                    {SITE.email}
-                  </a>
-                </dd>
-              </div>
-            </dl>
+            </InfoRow>
+          </div>
+
+          <div className="mt-10 overflow-hidden rounded-2xl border border-hairline">
+            <iframe
+              title="Lokalizacja PPH OKSAN — Lubartów"
+              src="https://www.google.com/maps?q=Strefowa%2030%2C%2021-100%20Lubart%C3%B3w&output=embed"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="h-56 w-full grayscale-[0.35] [color-scheme:light]"
+            />
           </div>
         </ScrollReveal>
 
-        {/* Form skeleton — inert for now. */}
-        <ScrollReveal delay={0.08}>
-          <form
-            className="flex flex-col gap-5 rounded-2xl border border-hairline bg-surface/50 p-6 backdrop-blur-sm sm:p-8"
-            aria-label="Formularz kontaktowy"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            {FIELDS.map((field) => (
-              <label key={field.id} className="flex flex-col gap-2 text-sm">
-                <span className="text-ink-2">{field.label}</span>
-                <input
-                  type={field.type}
-                  name={field.id}
-                  autoComplete={field.autoComplete}
-                  className="rounded-xl border border-hairline bg-bg/50 px-4 py-3 text-ink outline-none transition-colors placeholder:text-ink-2/50 focus:border-tp-red/60"
-                />
-              </label>
-            ))}
-
-            <label className="flex flex-col gap-2 text-sm">
-              <span className="text-ink-2">Wiadomość</span>
-              <textarea
-                name="message"
-                rows={4}
-                className="resize-none rounded-xl border border-hairline bg-bg/50 px-4 py-3 text-ink outline-none transition-colors placeholder:text-ink-2/50 focus:border-tp-red/60"
+        {/* ----------------------------- PRAWA: formularz ---------------------- */}
+        <ScrollReveal
+          delay={0.08}
+          className="relative rounded-3xl border border-hairline bg-gradient-to-b from-white/[0.045] to-white/[0.01] p-7 shadow-ambient sm:p-9"
+        >
+          <form noValidate onSubmit={handleSubmit(onSubmit)}>
+            {/* Honeypot — ukryty przed użytkownikami i czytnikami ekranu */}
+            <div className="absolute left-[-9999px] top-0" aria-hidden>
+              <label htmlFor="website">Nie wypełniaj tego pola</label>
+              <input
+                id="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                {...register("website")}
               />
-            </label>
+            </div>
 
-            <div className="mt-2">
-              <Button type="submit">Wyślij zapytanie</Button>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <FormInput
+                id="name"
+                label="Imię i nazwisko"
+                placeholder="Jan Kowalski"
+                autoComplete="name"
+                error={errors.name?.message}
+                {...register("name")}
+              />
+              <FormInput
+                id="company"
+                label="Firma (opcjonalnie)"
+                placeholder="Nazwa firmy"
+                autoComplete="organization"
+                error={errors.company?.message}
+                {...register("company")}
+              />
+            </div>
+
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              <FormInput
+                id="email"
+                label="E-mail"
+                type="email"
+                inputMode="email"
+                placeholder="jan@firma.pl"
+                autoComplete="email"
+                error={errors.email?.message}
+                {...register("email")}
+              />
+              <FormInput
+                id="phone"
+                label="Telefon"
+                type="tel"
+                inputMode="tel"
+                placeholder="+48 600 000 000"
+                autoComplete="tel"
+                error={errors.phone?.message}
+                {...register("phone")}
+              />
+            </div>
+
+            <div className="mt-5">
+              <label htmlFor="purpose" className={selectLabel}>
+                Cel kontaktu
+              </label>
+              <div className="relative">
+                <select
+                  id="purpose"
+                  className={selectField}
+                  {...register("purpose")}
+                >
+                  {PURPOSE_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value} className="bg-bg">
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  aria-hidden
+                  viewBox="0 0 24 24"
+                  className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-2"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </div>
+            </div>
+
+            <FormTextarea
+              id="message"
+              label="Wiadomość"
+              placeholder="Napisz, czego potrzebujesz — dobór ramki, próbki, wycena…"
+              className="mt-5"
+              rows={5}
+              error={errors.message?.message}
+              {...register("message")}
+            />
+
+            <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <Button type="submit" size="lg" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Spinner />
+                    <span>Wysyłanie…</span>
+                  </>
+                ) : (
+                  "Wyślij"
+                )}
+              </Button>
+
+              <p className="font-inter text-xs leading-relaxed text-ink-2/80 sm:max-w-[15rem] sm:text-right">
+                Odpowiadamy zwykle w ciągu jednego dnia roboczego.
+              </p>
+            </div>
+
+            <div aria-live="polite">
+              {status === "success" ? (
+                <p className="mt-5 flex items-start gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 font-inter text-sm text-emerald-300">
+                  <svg
+                    aria-hidden
+                    viewBox="0 0 24 24"
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  {CONTACT_COPY.success}
+                </p>
+              ) : null}
+
+              {status === "error" ? (
+                <p
+                  role="alert"
+                  className="mt-5 flex items-start gap-2.5 rounded-xl border border-tp-red/40 bg-tp-red/10 px-4 py-3 font-inter text-sm text-tp-red"
+                >
+                  <svg
+                    aria-hidden
+                    viewBox="0 0 24 24"
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 8v4M12 16h.01" />
+                  </svg>
+                  {serverError ?? CONTACT_COPY.error}
+                </p>
+              ) : null}
             </div>
           </form>
         </ScrollReveal>
@@ -105,3 +370,5 @@ export default function Contact() {
     </Section>
   );
 }
+
+export default Contact;

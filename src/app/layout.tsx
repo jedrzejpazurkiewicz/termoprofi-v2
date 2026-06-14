@@ -4,6 +4,7 @@ import "./globals.css";
 
 import SmoothScrollProvider from "@/components/layout/SmoothScrollProvider";
 import Header from "@/components/layout/Header";
+import StickyCanvas from "@/components/three/StickyCanvas";
 import Footer from "@/components/layout/Footer";
 
 const jost = Jost({
@@ -77,6 +78,7 @@ export default function RootLayout({
         </a>
         <SmoothScrollProvider>
           <Header />
+          <StickyCanvas />
           <main id="main" className="relative z-10">
             {children}
           </main>

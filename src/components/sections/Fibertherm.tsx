@@ -1,67 +1,214 @@
 "use client";
 
+import { useId, useState } from "react";
+import Image from "next/image";
 import Section from "@/components/ui/Section";
+import Button from "@/components/ui/Button";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 
 /**
- * Fibertherm — placeholder shell. The product-story / technology deep-dive.
- * For now: the real heading, an intro that frames the material, and a tidy
- * skeleton of three feature slots so the structure of the eventual section is
- * legible. Full copy, diagrams and certifications land in a later pass.
+ * Czym jest FIBERTHERM — the technology deep-dive.
+ *
+ * Two layers:
+ *  1. A plain-language pitch (laymen-friendly) paired with the IGU
+ *     cross-section render, framed softly with a caption that points at the
+ *     warm-edge spacer inside the sealed unit.
+ *  2. An expandable technical-spec panel (useState toggle) for the readers who
+ *     want the numbers. The expand is a CSS grid-rows transition, so there is no
+ *     layout-measuring JS; reduced-motion users get an instant, transition-free
+ *     reveal via the `motion-reduce` utilities.
+ *
+ * Spec copy lives locally in this file (out of constants by design).
  */
 
-const PILLARS = [
+interface SpecItem {
+  label: string;
+  value: string;
+  note: string;
+}
+
+const SPEC: SpecItem[] = [
   {
-    title: "Kompozyt, nie metal",
-    body: "Tworzywo wzmacniane włóknem szklanym zamiast aluminium czy stali — drastycznie niższa przewodność cieplna.",
+    label: "Materiał",
+    value: "Kompozyt szklano-poliestrowy",
+    note: "Włókno szklane w matrycy z tworzywa — bez metalu na krawędzi pakietu.",
   },
   {
-    title: "Ciepła krawędź",
-    body: "Wyższa temperatura przy ramce ogranicza kondensację i eliminuje mostki termiczne na obrzeżu szyby.",
+    label: "Stabilność wymiarowa",
+    value: "Wysoka sztywność, brak pełzania",
+    note: "Profil trzyma geometrię pakietu przez całą żywotność szyby zespolonej.",
   },
   {
-    title: "Trwałość EN 1279",
-    body: "Stabilność pakietu i szczelność potwierdzone normą dla szyb zespolonych — na lata.",
+    label: "Kompatybilność z IGU",
+    value: "Pełna, bez zmian w linii",
+    note: "Wpina się w istniejący proces produkcji szyb zespolonych — bez przezbrajania.",
   },
-] as const;
+  {
+    label: "Wysokość profilu",
+    value: "Jak u rozwiązań konkurencyjnych",
+    note: "Ta sama zabudowa krawędzi — zysk cieplny bez kompromisu w geometrii.",
+  },
+  {
+    label: "Przewodność cieplna",
+    value: "≈ 500× niższa niż aluminium",
+    note: "Krawędź pakietu przestaje być mostkiem termicznym — cieplej przy ramie.",
+  },
+];
 
 export default function Fibertherm() {
+  const [open, setOpen] = useState(false);
+  const panelId = useId();
+
   return (
     <Section id="fibertherm" eyebrow="Technologia FIBERTHERM">
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+      {/* ---------- TOP: pitch + cross-section ---------- */}
+      <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
         <ScrollReveal>
-          <div className="lg:sticky lg:top-28">
+          <div>
             <h2 className="text-balance font-jost text-display-sm font-bold text-ink">
               Materiał, który zmienia regułę.
             </h2>
-            <p className="mt-6 max-w-prose text-pretty text-lg leading-relaxed text-ink-2">
-              FIBERTHERM to ciepła ramka dystansowa z kompozytu wzmacnianego
-              włóknem szklanym. Tam, gdzie aluminium oddaje ciepło, kompozyt je
-              zatrzymuje — i to robi całą różnicę dla okna.
-            </p>
+            <div className="mt-7 max-w-prose space-y-5 text-pretty text-lg leading-relaxed text-ink-2">
+              <p>
+                FIBERTHERM to ciepła ramka dystansowa nowej generacji —
+                kompozyt wzmacniany włóknem szklanym w miejsce aluminium czy
+                stali. Tam, gdzie metal oddaje ciepło na zewnątrz, kompozyt je
+                zatrzymuje.
+              </p>
+              <p>
+                Efekt czujesz przy oknie: cieplejsza krawędź szyby, mniej
+                kondensacji przy ramie, wyższa klasa energetyczna całego
+                pakietu — bez grubszej, cięższej konstrukcji.
+              </p>
+              <p>
+                A dla producenta szyb zespolonych najważniejsze jest to, czego
+                nie widać: ramka wpina się w istniejącą linię bez żadnych zmian
+                w procesie. Ten sam montaż, ten sam rytm produkcji — tylko
+                lepszy rezultat.
+              </p>
+            </div>
           </div>
         </ScrollReveal>
 
-        <div className="flex flex-col gap-px overflow-hidden rounded-2xl border border-hairline bg-hairline">
-          {PILLARS.map((pillar, i) => (
-            <ScrollReveal key={pillar.title} delay={0.06 * i}>
-              <article className="bg-surface/50 p-7 sm:p-8">
-                <div className="flex items-baseline gap-4">
-                  <span className="font-jost text-sm tabular-nums text-tp-red">
-                    0{i + 1}
-                  </span>
-                  <h3 className="font-jost text-xl font-medium text-ink">
-                    {pillar.title}
-                  </h3>
-                </div>
-                <p className="mt-3 pl-8 text-pretty text-sm leading-relaxed text-ink-2">
-                  {pillar.body}
-                </p>
-              </article>
-            </ScrollReveal>
-          ))}
-        </div>
+        <ScrollReveal delay={0.08} y={32}>
+          <figure className="relative">
+            {/* soft ambient glow behind the render */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -inset-6 -z-10 rounded-[2rem] bg-radial-glow opacity-70 blur-2xl"
+            />
+            <div className="overflow-hidden rounded-2xl border border-hairline bg-surface/40 shadow-ambient">
+              <div className="relative aspect-[1562/1072] w-full">
+                <Image
+                  src="/images/gabriel-3d-przekroj.png"
+                  alt="Przekrój szyby zespolonej z ciepłą ramką dystansową FIBERTHERM na krawędzi pakietu"
+                  fill
+                  sizes="(min-width: 1024px) 52vw, 100vw"
+                  className="object-contain"
+                />
+                {/* depth: hairline top sheen + bottom vignette */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 top-0 h-px bg-hairline-top"
+                />
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_0%,transparent_60%,rgba(11,15,20,0.5)_100%)]"
+                />
+              </div>
+            </div>
+            <figcaption className="mt-4 flex items-start gap-3 px-1 text-sm leading-snug text-ink-2">
+              <span
+                aria-hidden
+                className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-tp-red shadow-[0_0_8px_-1px_rgba(207,46,46,0.85)]"
+              />
+              <span className="text-pretty">
+                Przekrój pakietu szyby zespolonej. Ciepła ramka FIBERTHERM
+                oddziela tafle na krawędzi — w miejscu, gdzie tradycyjnie
+                powstaje mostek termiczny.
+              </span>
+            </figcaption>
+          </figure>
+        </ScrollReveal>
       </div>
+
+      {/* ---------- EXPANDABLE: technical specification ---------- */}
+      <ScrollReveal delay={0.04} className="mt-16 lg:mt-20">
+        <div className="overflow-hidden rounded-2xl border border-hairline bg-surface/30 backdrop-blur-[2px]">
+          <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+            <div>
+              <h3 className="font-jost text-xl font-medium text-ink">
+                Specyfikacja techniczna
+              </h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-ink-2">
+                Liczby dla tych, którzy chcą wejść głębiej.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setOpen((v) => !v)}
+              aria-expanded={open}
+              aria-controls={panelId}
+              className="shrink-0"
+            >
+              {open ? "Zwiń specyfikację" : "Zobacz specyfikację techniczną"}
+              <svg
+                aria-hidden
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`h-4 w-4 transition-transform duration-300 ease-calm motion-reduce:transition-none ${
+                  open ? "rotate-180" : "rotate-0"
+                }`}
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </Button>
+          </div>
+
+          {/* grid-rows trick: animates 0fr → 1fr without measuring height */}
+          <div
+            id={panelId}
+            role="region"
+            aria-label="Specyfikacja techniczna FIBERTHERM"
+            className={`grid transition-[grid-template-rows] duration-500 ease-calm motion-reduce:transition-none ${
+              open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+            }`}
+          >
+            <div className="overflow-hidden">
+              <dl className="border-t border-hairline">
+                {SPEC.map((item, i) => (
+                  <div
+                    key={item.label}
+                    className={`grid grid-cols-1 gap-2 px-6 py-5 sm:grid-cols-[minmax(0,11rem)_1fr] sm:gap-8 sm:px-8 ${
+                      i > 0 ? "border-t border-hairline" : ""
+                    }`}
+                  >
+                    <dt className="flex items-baseline gap-3 font-jost text-sm uppercase tracking-wide text-ink-2">
+                      <span className="tabular-nums text-tp-red/80">
+                        0{i + 1}
+                      </span>
+                      {item.label}
+                    </dt>
+                    <dd>
+                      <p className="font-jost text-lg font-medium text-ink">
+                        {item.value}
+                      </p>
+                      <p className="mt-1 text-pretty text-sm leading-relaxed text-ink-2">
+                        {item.note}
+                      </p>
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
+        </div>
+      </ScrollReveal>
     </Section>
   );
 }

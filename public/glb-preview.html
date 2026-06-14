@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>GLB Preview</title>
+<style>body{margin:0;background:#0b0f14;}canvas{display:block;}</style>
+<script type="importmap">
+{"imports": {
+  "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+}}
+</script>
+</head>
+<body>
+<canvas id="c" style="width:100vw;height:100vh;"></canvas>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b0f14);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 5000);
+camera.position.set(0, 50, 800);
+
+const renderer = new THREE.WebGLRenderer({canvas: document.getElementById('c'), antialias: true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+const dir = new THREE.DirectionalLight(0xffffff, 1.0);
+dir.position.set(100, 200, 500);
+scene.add(dir);
+const dir2 = new THREE.DirectionalLight(0x88aaff, 0.5);
+dir2.position.set(-200, -100, 300);
+scene.add(dir2);
+
+const loader = new GLTFLoader();
+loader.load(
+  '/videos/../models/szyba.glb',
+  (gltf) => {
+    scene.add(gltf.scene);
+    // fit to view
+    const box = new THREE.Box3().setFromObject(gltf.scene);
+    const size = box.getSize(new THREE.Vector3()).length();
+    const center = box.getCenter(new THREE.Vector3());
+    gltf.scene.position.x += (gltf.scene.position.x - center.x);
+    gltf.scene.position.y += (gltf.scene.position.y - center.y);
+    gltf.scene.position.z += (gltf.scene.position.z - center.z);
+    camera.near = size / 100;
+    camera.far = size * 100;
+    camera.position.set(center.x, center.y, center.z + size * 1.5);
+    camera.lookAt(center);
+    controls.target.set(center.x, center.y, center.z);
+    controls.update();
+    document.title = `Loaded: ${gltf.scene.children.length} top-level objects`;
+  },
+  undefined,
+  (err) => console.error(err)
+);
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
