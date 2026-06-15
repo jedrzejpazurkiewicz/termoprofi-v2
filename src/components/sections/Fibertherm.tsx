@@ -5,6 +5,7 @@ import Image from "next/image";
 import Section from "@/components/ui/Section";
 import Button from "@/components/ui/Button";
 import ScrollReveal from "@/components/animations/ScrollReveal";
+import ThermalCompare from "@/components/sections/ThermalCompare";
 
 /**
  * Czym jest FIBERTHERM — the technology deep-dive.
@@ -131,6 +132,11 @@ export default function Fibertherm() {
           </figure>
         </ScrollReveal>
       </div>
+
+      {/* ---------- COMPARE: static 50/50 thermal split (standard vs FIBERTHERM) ---------- */}
+      <ScrollReveal delay={0.04} y={32} className="mt-16 lg:mt-20">
+        <ThermalCompare />
+      </ScrollReveal>
 
       {/* ---------- EXPANDABLE: technical specification ---------- */}
       <ScrollReveal delay={0.04} className="mt-16 lg:mt-20">

@@ -10,6 +10,8 @@
 export interface SocialLink {
   label: string;
   href: string;
+  /** When true, the link is a placeholder (no real account yet) and should render non-interactive. */
+  disabled?: boolean;
 }
 
 export interface SiteInfo {
@@ -35,10 +37,10 @@ export const SITE: SiteInfo = {
   phoneHref: "tel:+48818546226",
   email: "info@termoprofi.com",
   socials: [
-    { label: "Facebook", href: "https://www.facebook.com/" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/" },
-    { label: "Instagram", href: "https://www.instagram.com/" },
-    { label: "YouTube", href: "https://www.youtube.com/" },
+    { label: "Facebook", href: "https://www.facebook.com/", disabled: true },
+    { label: "LinkedIn", href: "https://www.linkedin.com/", disabled: true },
+    { label: "Instagram", href: "https://www.instagram.com/", disabled: true },
+    { label: "YouTube", href: "https://www.youtube.com/", disabled: true },
   ],
 };
 
@@ -53,7 +55,7 @@ export interface NavLink {
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Produkty", href: "#produkty" },
-  { label: "Zastosowania", href: "#zastosowania" },
+  // "Zastosowania" / Realizacje — przeniesione na osobną zakładkę; przywrócić jako route, gdy powstanie.
   { label: "Zaufali nam", href: "#zaufali-nam" },
   { label: "O nas", href: "#o-nas" },
   { label: "Kontakt", href: "#kontakt" },
@@ -67,6 +69,7 @@ export interface Hero {
   title: string;
   subtitle: string;
   cta: string;
+  ctaSecondary: string;
 }
 
 export const HERO: Hero = {
@@ -74,6 +77,7 @@ export const HERO: Hero = {
   subtitle:
     "Mały element w Twoim oknie, który ma wielki wpływ. Zmniejsza straty ciepła o 22%.",
   cta: "Poznaj FIBERTHERM",
+  ctaSecondary: "Umów rozmowę",
 };
 
 /* -------------------------------------------------------------------------- */

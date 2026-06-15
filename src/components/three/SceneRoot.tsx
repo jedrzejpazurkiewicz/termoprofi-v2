@@ -16,16 +16,18 @@ import * as THREE from "three";
 import GlassUnit from "@/components/three/GlassUnit";
 import SceneController from "@/components/three/SceneController";
 import Effects from "@/components/three/Effects";
+import { maxDpr } from "@/lib/capabilities";
 
 export default function SceneRoot() {
   return (
     <Canvas
       shadows
-      dpr={[1, 2]}
+      dpr={[1, maxDpr()]}
       gl={{
         antialias: true,
         alpha: true,
         toneMapping: THREE.ACESFilmicToneMapping,
+        outputColorSpace: THREE.SRGBColorSpace,
       }}
       camera={{ position: [4.5, 1.5, 5], fov: 38 }}
     >
@@ -34,15 +36,15 @@ export default function SceneRoot() {
         <GlassUnit />
         <ContactShadows
           position={[0, -1.6, 0]}
-          opacity={0.5}
-          scale={12}
-          blur={2.6}
+          opacity={0.25}
+          scale={10}
+          blur={1.2}
           far={4}
         />
       </Suspense>
 
-      <ambientLight intensity={0.15} />
-      <directionalLight position={[5, 6, 5]} intensity={1.2} castShadow />
+      <ambientLight intensity={0.35} />
+      <directionalLight position={[5, 6, 5]} intensity={0.7} castShadow />
 
       <SceneController />
       <Effects />

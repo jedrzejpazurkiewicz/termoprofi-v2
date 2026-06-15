@@ -1,32 +1,13 @@
 "use client";
 
 /**
- * Effects — postprocessing stack.
+ * Effects — postprocessing stack (TEMPORARILY DISABLED for performance).
  *
- * A gentle Bloom to let the thermal emissive glow bleed (the warm core should
- * feel like heat, not paint), plus a soft Vignette to settle attention toward
- * the centre and reinforce the calm, dark mood.
- *
- * We keep the normal pass disabled (`enableNormalPass={false}`) since we run
- * no SSAO/normal-based effects — that keeps the composer cheap. Capability-
- * gating (drop effects on weak GPUs) comes later.
+ * The Bloom + fullscreen EffectComposer pass was a measurable per-frame cost on
+ * mid GPUs and the page stuttered. Disabled until we gate it behind a capability
+ * check (strong GPU + not reduced-motion). The thermal glow still reads via the
+ * material emissive + the accent point light, just without the bloom bleed.
  */
-import {
-  EffectComposer,
-  Bloom,
-  Vignette,
-} from "@react-three/postprocessing";
-
 export default function Effects() {
-  return (
-    <EffectComposer enableNormalPass={false}>
-      <Bloom
-        intensity={0.9}
-        luminanceThreshold={0.6}
-        mipmapBlur
-        radius={0.7}
-      />
-      <Vignette darkness={0.5} offset={0.3} />
-    </EffectComposer>
-  );
+  return null;
 }

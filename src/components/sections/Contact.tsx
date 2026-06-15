@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -75,6 +75,7 @@ function InfoRow({
 export function Contact() {
   const [status, setStatus] = useState<Status>("idle");
   const [serverError, setServerError] = useState<string | null>(null);
+  const successRef = useRef<HTMLParagraphElement>(null);
 
   const {
     register,
@@ -122,6 +123,14 @@ export function Contact() {
       setStatus("error");
     }
   };
+
+  // Po udanym wysłaniu przenosimy fokus na komunikat sukcesu,
+  // aby czytniki ekranu i klawiatura trafiły prosto do potwierdzenia.
+  useEffect(() => {
+    if (status === "success") {
+      successRef.current?.focus();
+    }
+  }, [status]);
 
   const isLoading = status === "loading";
 
@@ -179,17 +188,27 @@ export function Contact() {
 
             <InfoRow label="Social media">
               <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink-2">
-                {SITE.socials.map((social) => (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="transition-colors duration-300 ease-calm hover:text-ink"
-                  >
-                    {social.label}
-                  </a>
-                ))}
+                {SITE.socials.map((social) =>
+                  social.disabled ? (
+                    <span
+                      key={social.label}
+                      aria-disabled="true"
+                      className="cursor-not-allowed opacity-50"
+                    >
+                      {social.label}
+                    </span>
+                  ) : (
+                    <a
+                      key={social.label}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="transition-colors duration-300 ease-calm hover:text-ink"
+                    >
+                      {social.label}
+                    </a>
+                  ),
+                )}
               </div>
             </InfoRow>
           </div>
@@ -325,7 +344,11 @@ export function Contact() {
 
             <div aria-live="polite">
               {status === "success" ? (
-                <p className="mt-5 flex items-start gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 font-inter text-sm text-emerald-300">
+                <p
+                  ref={successRef}
+                  tabIndex={-1}
+                  className="mt-5 flex items-start gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 font-inter text-sm text-emerald-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                >
                   <svg
                     aria-hidden
                     viewBox="0 0 24 24"

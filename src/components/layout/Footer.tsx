@@ -69,14 +69,23 @@ export function Footer() {
             <ul className="mt-4 space-y-2.5">
               {SITE.socials.map((social) => (
                 <li key={social.label}>
-                  <a
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-ink-2 transition-colors hover:text-ink"
-                  >
-                    {social.label}
-                  </a>
+                  {social.disabled ? (
+                    <span
+                      aria-disabled="true"
+                      className="cursor-not-allowed text-sm text-ink-2 opacity-50"
+                    >
+                      {social.label}
+                    </span>
+                  ) : (
+                    <a
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-ink-2 transition-colors hover:text-ink"
+                    >
+                      {social.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>

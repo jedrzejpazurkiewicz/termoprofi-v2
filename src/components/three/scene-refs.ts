@@ -15,7 +15,7 @@
  * controller must null-check before using them, since mount order between
  * sibling components inside <Canvas> is not guaranteed.
  */
-import type { Group, PointLight } from "three";
+import type { Group, PointLight, Object3D } from "three";
 
 /** A `{ value: number }` uniform handle, the shape three.js uniforms use. */
 export type Uniform<T> = { value: T };
@@ -31,6 +31,11 @@ export interface SceneRefs {
   uHeat: Uniform<number>;
   /** Accent point light inside the unit; intensity tracks uHeat. */
   heatLight: PointLight | null;
+  /** Real-model glass panes (named "szyba*"); slide apart on beat 1 — the
+   *  "rozbierz okno" reveal that exposes the FIBERTHERM ramka between them. */
+  panes: { obj: Object3D; baseX: number }[];
+  /** Centroid X of the panes (model-local units) — the explosion pivot. */
+  paneCenterX: number;
 }
 
 /**
@@ -44,4 +49,6 @@ export const sceneRefs: SceneRefs = {
   glass: null,
   uHeat: { value: 0.3 },
   heatLight: null,
+  panes: [],
+  paneCenterX: 0,
 };

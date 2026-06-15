@@ -34,6 +34,10 @@ const QUOTE_LINES: string[] = [
   "technologii i precyzji wykonania.",
 ];
 
+/** Words emphasised in brand red within the pull-quote (the key values). */
+const HIGHLIGHT = new Set(["technologii", "precyzji", "wykonania"]);
+const normalizeWord = (w: string) => w.toLowerCase().replace(/[.,;:]+$/g, "");
+
 const MOTTO: string[] = ["Doświadczenie", "Wiedza", "Zaangażowanie"];
 
 export default function Owner() {
@@ -94,10 +98,10 @@ export default function Owner() {
               className="absolute -inset-4 -z-10 rounded-[1.75rem] bg-[radial-gradient(60%_60%_at_50%_30%,rgba(255,255,255,0.05),transparent_70%)] blur-2xl"
             />
             <div className="relative overflow-hidden rounded-3xl border border-hairline bg-surface shadow-[0_24px_60px_-24px_rgba(0,0,0,0.75)]">
-              <div className="relative aspect-[4/5] w-full">
+              <div className="relative aspect-square w-full">
                 <Image
-                  src="/images/profil-ramka.jpg"
-                  alt="Profil ciepłej ramki dystansowej TermoProfi FIBERTHERM"
+                  src="/images/owner-andrzej.jpg"
+                  alt="Andrzej Tabała — właściciel PPH OKSAN"
                   fill
                   sizes="(min-width: 1024px) 38vw, 100vw"
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
@@ -130,11 +134,26 @@ export default function Owner() {
               ref={quoteRef}
               className="mt-6 text-balance font-jost text-[clamp(1.6rem,3.1vw,2.6rem)] font-medium italic leading-[1.25] text-ink"
             >
-              {QUOTE_LINES.map((line, i) => (
-                <span key={i} data-quote-line className="block">
-                  {line}
-                </span>
-              ))}
+              {QUOTE_LINES.map((line, i) => {
+                const words = line.split(" ");
+                return (
+                  <span key={i} data-quote-line className="block">
+                    {words.map((word, j) => (
+                      <span
+                        key={j}
+                        className={
+                          HIGHLIGHT.has(normalizeWord(word))
+                            ? "text-tp-red"
+                            : undefined
+                        }
+                      >
+                        {word}
+                        {j < words.length - 1 ? " " : ""}
+                      </span>
+                    ))}
+                  </span>
+                );
+              })}
             </blockquote>
 
             <figcaption className="mt-12">
