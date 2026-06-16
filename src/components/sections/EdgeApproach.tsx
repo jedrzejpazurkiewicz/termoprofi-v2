@@ -13,6 +13,24 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
  * stutters badly. Scroll drives only the crossfade that hands off to the fixed
  * 3D canvas behind it. Transparent container so the canvas shows through.
  */
+
+// Słowa do sekwencyjnej animacji "po kolei" — każde wjeżdża z opóźnieniem ~150ms.
+const WORDS_H1: { text: string; accent?: boolean }[] = [
+  { text: "Tędy" },
+  { text: "ucieka" },
+  { text: "ciepło.", accent: true },
+];
+const WORDS_H2: { text: string }[] = [
+  { text: "Z" },
+  { text: "każdego" },
+  { text: "okna." },
+  { text: "Każdej" },
+  { text: "zimy." },
+  { text: "Przez" },
+  { text: "30" },
+  { text: "lat." },
+];
+
 export default function EdgeApproach() {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -73,8 +91,6 @@ export default function EdgeApproach() {
   }, []);
 
   const videoOpacity = useTransform(scrollYProgress, [0, 1], [1, 1]);
-  const copyOpacity = useTransform(scrollYProgress, [0.05, 0.2], [0, 1]);
-  const copyY = useTransform(scrollYProgress, [0.05, 0.2], [24, 0]);
 
   return (
     <section
@@ -103,21 +119,52 @@ export default function EdgeApproach() {
         </motion.div>
 
         <motion.div className="absolute inset-x-0 bottom-[14vh] mx-auto max-w-2xl px-6 text-center">
-          {/* Linia 1 — dwukolorowa: "Tędy ucieka" białe, "ciepło." czerwone */}
-          <motion.h1
-            className="font-jost text-display-sm font-bold text-white"
-            style={reduce ? undefined : { opacity: copyOpacity, y: copyY }}
-          >
-            Tędy ucieka{" "}
-            <span className="text-tp-red">ciepło.</span>
-          </motion.h1>
-          {/* Linia 2 — większa czcionka, animuje się RAZEM z linią 1 */}
-          <motion.p
-            className="mt-3 text-pretty text-xl text-ink-2"
-            style={reduce ? undefined : { opacity: copyOpacity, y: copyY }}
-          >
-            Z każdego okna. Każdej zimy. Przez 30 lat.
-          </motion.p>
+          {/* Linia 1 — słowa wpadają po kolei (co ~150ms) */}
+          <h1 className="font-jost text-display-sm font-bold text-white">
+            {WORDS_H1.flatMap((word, i) => [
+              <span
+                key={`h1-${i}`}
+                className="inline-block overflow-hidden align-bottom"
+              >
+                <motion.span
+                  className={
+                    word.accent ? "inline-block text-tp-red" : "inline-block"
+                  }
+                  initial={reduce ? false : { opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.5 }}
+                  transition={{ duration: 0.5, delay: i * 0.15, ease: "easeOut" }}
+                >
+                  {word.text}
+                </motion.span>
+              </span>,
+              " ",
+            ])}
+          </h1>
+          {/* Linia 2 — kontynuacja sekwencji, po słowach z linii 1 */}
+          <p className="mt-3 text-pretty text-xl text-ink-2">
+            {WORDS_H2.flatMap((word, i) => [
+              <span
+                key={`h2-${i}`}
+                className="inline-block overflow-hidden align-bottom"
+              >
+                <motion.span
+                  className="inline-block"
+                  initial={reduce ? false : { opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.5 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: (WORDS_H1.length + i) * 0.15,
+                    ease: "easeOut",
+                  }}
+                >
+                  {word.text}
+                </motion.span>
+              </span>,
+              " ",
+            ])}
+          </p>
         </motion.div>
       </div>
     </section>
