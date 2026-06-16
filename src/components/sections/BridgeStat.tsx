@@ -245,10 +245,10 @@ export default function BridgeStat() {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="1.75"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-4 w-4 transition-transform duration-300 ease-calm group-hover:translate-y-1"
+              className="h-6 w-6 animate-bounce"
             >
               <path d="m6 9 6 6 6-6" />
             </svg>
