@@ -8,7 +8,7 @@ export function Footer() {
   const year = 2026;
 
   return (
-    <footer className="relative z-10 border-t border-hairline bg-bg/60 backdrop-blur-sm">
+    <footer className="relative z-10 border-t border-hairline bg-bg">
       <div className="mx-auto w-full max-w-container px-6 py-16 sm:px-8 lg:px-10">
         <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
           {/* Brand + address */}
