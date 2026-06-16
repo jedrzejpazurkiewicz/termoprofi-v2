@@ -1,10 +1,16 @@
 "use client";
 
 import Image from "next/image";
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import Section from "@/components/ui/Section";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import { COUNTRIES } from "@/lib/constants";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 /**
  * TrustedBy — "Zaufali nam".
@@ -28,6 +34,44 @@ const NAMED_COUNTRIES = COUNTRIES.filter((c) => c.iso2 !== "");
 const MARKET_COUNT = NAMED_COUNTRIES.length;
 
 export default function TrustedBy() {
+  const mapRef = useRef<HTMLDivElement>(null);
+
+  // Flag pins "hammer in" — drop from above with a bounce, staggered, once the
+  // map scrolls into view. Reduced-motion shows them in place. The pins live on
+  // an inner [data-map-pin] element so GSAP owns its transform without fighting
+  // the CSS centering transform on the positioning wrapper.
+  useGSAP(
+    () => {
+      const reduce = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      const pins =
+        mapRef.current?.querySelectorAll<HTMLElement>("[data-map-pin]");
+      if (!pins || pins.length === 0) return;
+
+      if (reduce) {
+        gsap.set(pins, { opacity: 1, yPercent: 0 });
+        return;
+      }
+
+      gsap.set(pins, { opacity: 0, yPercent: -200 });
+
+      gsap.to(pins, {
+        opacity: 1,
+        yPercent: 0,
+        duration: 0.7,
+        ease: "back.out(1.6)",
+        stagger: 0.12,
+        scrollTrigger: {
+          trigger: mapRef.current,
+          start: "top 75%",
+          toggleActions: "play none none none",
+        },
+      });
+    },
+    { scope: mapRef },
+  );
+
   return (
     <Section id="zaufali" variant="dark">
       <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
@@ -45,7 +89,7 @@ export default function TrustedBy() {
                 aria-hidden
                 className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
               />
-              <div className="relative overflow-hidden rounded-xl">
+              <div ref={mapRef} className="relative overflow-hidden rounded-xl">
                 <Image
                   src="/images/mapa-dystrybucji.png"
                   alt="Mapa dystrybucji ciepłych ramek FIBERTHERM — Europa, Ameryka Północna i Azja"
@@ -60,6 +104,36 @@ export default function TrustedBy() {
                   aria-hidden
                   className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-white/[0.06]"
                 />
+
+                {/* Pinezki z flagami — 10 nazwanych krajów. Outer = pozycja na
+                    mapie + centrowanie (CSS); inner [data-map-pin] = animowany
+                    wjazd GSAP (osobny element, żeby GSAP nie nadpisał centrowania). */}
+                {COUNTRIES.filter((c) => c.mapPos).map((country) => (
+                  <div
+                    key={country.iso2}
+                    className="absolute -translate-x-1/2 -translate-y-full"
+                    style={{
+                      left: `${country.mapPos!.x}%`,
+                      top: `${country.mapPos!.y}%`,
+                    }}
+                  >
+                    <div data-map-pin className="group relative">
+                      {/* szpic — trójkąt CSS wskazujący punkt na mapie */}
+                      <div
+                        aria-hidden
+                        className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 border-x-[6px] border-t-[8px] border-x-transparent border-t-tp-red"
+                      />
+                      {/* główka z flagą */}
+                      <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-tp-red text-[14px] leading-none shadow-[0_0_12px_rgba(207,46,46,0.5),0_2px_6px_rgba(0,0,0,0.4)] ring-2 ring-white/90">
+                        {country.flag}
+                      </div>
+                      {/* tooltip z nazwą kraju (hover) */}
+                      <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-bg/90 px-2 py-1 text-xs text-ink opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                        {country.name}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </figure>

@@ -120,19 +120,21 @@ export interface Country {
   name: string;
   flag: string;
   iso2: string;
+  /** Pozycja na mapie w procentach (0-100, od lewej do prawej / od góry do dołu). */
+  mapPos?: { x: number; y: number };
 }
 
 export const COUNTRIES: Country[] = [
-  { name: "Polska", flag: "🇵🇱", iso2: "PL" },
-  { name: "Włochy", flag: "🇮🇹", iso2: "IT" },
-  { name: "Ukraina", flag: "🇺🇦", iso2: "UA" },
-  { name: "Bułgaria", flag: "🇧🇬", iso2: "BG" },
-  { name: "Portugalia", flag: "🇵🇹", iso2: "PT" },
-  { name: "Kanada", flag: "🇨🇦", iso2: "CA" },
-  { name: "Korea Południowa", flag: "🇰🇷", iso2: "KR" },
-  { name: "Rumunia", flag: "🇷🇴", iso2: "RO" },
-  { name: "Kosowo", flag: "🇽🇰", iso2: "XK" },
-  { name: "Niemcy", flag: "🇩🇪", iso2: "DE" },
+  { name: "Polska", flag: "🇵🇱", iso2: "PL", mapPos: { x: 51, y: 38 } },
+  { name: "Włochy", flag: "🇮🇹", iso2: "IT", mapPos: { x: 48, y: 47 } },
+  { name: "Ukraina", flag: "🇺🇦", iso2: "UA", mapPos: { x: 55, y: 36 } },
+  { name: "Bułgaria", flag: "🇧🇬", iso2: "BG", mapPos: { x: 54, y: 46 } },
+  { name: "Portugalia", flag: "🇵🇹", iso2: "PT", mapPos: { x: 36, y: 47 } },
+  { name: "Kanada", flag: "🇨🇦", iso2: "CA", mapPos: { x: 12, y: 22 } },
+  { name: "Korea Południowa", flag: "🇰🇷", iso2: "KR", mapPos: { x: 78, y: 38 } },
+  { name: "Rumunia", flag: "🇷🇴", iso2: "RO", mapPos: { x: 54, y: 42 } },
+  { name: "Kosowo", flag: "🇽🇰", iso2: "XK", mapPos: { x: 52, y: 46 } },
+  { name: "Niemcy", flag: "🇩🇪", iso2: "DE", mapPos: { x: 48, y: 36 } },
   { name: "i wiele innych", flag: "🌍", iso2: "" },
 ];
 
