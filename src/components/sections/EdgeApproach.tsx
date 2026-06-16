@@ -87,6 +87,12 @@ export default function EdgeApproach() {
           </p>
         </motion.div>
       </div>
+
+      {/* Dolny gradient — płynne przejście do jasnego tła sekcji Discovery. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-[#f5f5f7]"
+      />
     </section>
   );
 }
