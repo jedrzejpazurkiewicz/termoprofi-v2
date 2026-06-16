@@ -41,7 +41,7 @@ export default function EdgeApproach() {
     return () => io.disconnect();
   }, []);
 
-  const videoOpacity = useTransform(scrollYProgress, [0, 0.78, 0.96], [1, 1, 0]);
+  const videoOpacity = useTransform(scrollYProgress, [0, 1], [1, 1]);
   const copyOpacity = useTransform(
     scrollYProgress,
     [0.05, 0.2, 0.55, 0.75],
