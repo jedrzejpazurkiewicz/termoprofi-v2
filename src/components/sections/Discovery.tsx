@@ -57,7 +57,7 @@ export default function Discovery() {
     <section
       id="odkrycie"
       ref={ref}
-      className="relative h-[220vh]"
+      className="relative h-[220vh] bg-white/[0.92]"
       aria-label="Odkrycie: czym jest FIBERTHERM"
     >
       {/* Beat 1 — emerge band (upper half). */}
