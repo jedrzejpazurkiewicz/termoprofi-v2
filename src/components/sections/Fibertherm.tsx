@@ -1,7 +1,6 @@
 "use client";
 
 import { useId, useState } from "react";
-import Image from "next/image";
 import Section from "@/components/ui/Section";
 import Button from "@/components/ui/Button";
 import ScrollReveal from "@/components/animations/ScrollReveal";
@@ -100,12 +99,14 @@ export default function Fibertherm() {
             />
             <div className="overflow-hidden rounded-2xl border border-hairline bg-surface/40 shadow-ambient">
               <div className="relative aspect-[1562/1072] w-full">
-                <Image
-                  src="/images/gabriel-3d-przekroj.png"
-                  alt="Przekrój szyby zespolonej z ciepłą ramką dystansową FIBERTHERM na krawędzi pakietu"
-                  fill
-                  sizes="(min-width: 1024px) 52vw, 100vw"
-                  className="object-contain"
+                <video
+                  src="/videos/okno.mp4"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  aria-label="Przekrój pakietu szyby zespolonej — film poglądowy FIBERTHERM"
+                  className="absolute inset-0 h-full w-full object-contain"
                 />
                 {/* depth: hairline top sheen + bottom vignette */}
                 <div
