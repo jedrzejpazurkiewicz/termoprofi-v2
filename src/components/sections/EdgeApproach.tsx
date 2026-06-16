@@ -48,13 +48,6 @@ export default function EdgeApproach() {
     [0, 1, 1, 0],
   );
   const copyY = useTransform(scrollYProgress, [0.05, 0.2], [24, 0]);
-  // Drugi wers — wchodzi z opóźnieniem po pierwszym (narracja "po kolei").
-  const copy2Opacity = useTransform(
-    scrollYProgress,
-    [0.4, 0.6, 0.85, 0.95],
-    [0, 1, 1, 0.18],
-  );
-  const copy2Y = useTransform(scrollYProgress, [0.4, 0.55], [20, 0]);
 
   return (
     <section
@@ -83,17 +76,18 @@ export default function EdgeApproach() {
         </motion.div>
 
         <motion.div className="absolute inset-x-0 bottom-[14vh] mx-auto max-w-2xl px-6 text-center">
-          {/* Linia 1 — duża czerwona, wchodzi pierwsza */}
-          <motion.p
-            className="font-jost text-display-sm font-bold text-tp-red"
+          {/* Linia 1 — dwukolorowa: "Tędy ucieka" białe, "ciepło." czerwone */}
+          <motion.h1
+            className="font-jost text-display-sm font-bold text-white"
             style={reduce ? undefined : { opacity: copyOpacity, y: copyY }}
           >
-            Tędy ucieka ciepło.
-          </motion.p>
-          {/* Linia 2 — większa czcionka, wchodzi z opóźnieniem */}
+            Tędy ucieka{" "}
+            <span className="text-tp-red">ciepło.</span>
+          </motion.h1>
+          {/* Linia 2 — większa czcionka, animuje się RAZEM z linią 1 */}
           <motion.p
             className="mt-3 text-pretty text-xl text-ink-2"
-            style={reduce ? undefined : { opacity: copy2Opacity, y: copy2Y }}
+            style={reduce ? undefined : { opacity: copyOpacity, y: copyY }}
           >
             Z każdego okna. Każdej zimy. Przez 30 lat.
           </motion.p>
