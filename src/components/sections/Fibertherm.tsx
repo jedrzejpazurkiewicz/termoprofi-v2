@@ -97,8 +97,8 @@ export default function Fibertherm() {
               aria-hidden
               className="pointer-events-none absolute -inset-6 -z-10 rounded-[2rem] bg-radial-glow opacity-70 blur-2xl"
             />
-            <div className="overflow-hidden rounded-2xl border border-hairline bg-surface/40 shadow-ambient">
-              <div className="relative aspect-[1562/1072] w-full">
+            <div className="overflow-hidden rounded-xl border border-hairline bg-black shadow-ambient">
+              <div className="relative aspect-video w-full">
                 <video
                   src="/videos/okno.mp4"
                   autoPlay
