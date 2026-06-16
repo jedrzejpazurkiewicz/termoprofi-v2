@@ -14,23 +14,6 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
  * 3D canvas behind it. Transparent container so the canvas shows through.
  */
 
-// Słowa do sekwencyjnej animacji "po kolei" — każde wjeżdża z opóźnieniem ~150ms.
-const WORDS_H1: { text: string; accent?: boolean }[] = [
-  { text: "Tędy" },
-  { text: "ucieka" },
-  { text: "ciepło.", accent: true },
-];
-const WORDS_H2: { text: string }[] = [
-  { text: "Z" },
-  { text: "każdego" },
-  { text: "okna." },
-  { text: "Każdej" },
-  { text: "zimy." },
-  { text: "Przez" },
-  { text: "30" },
-  { text: "lat." },
-];
-
 export default function EdgeApproach() {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -119,49 +102,132 @@ export default function EdgeApproach() {
         </motion.div>
 
         <motion.div className="absolute inset-x-0 bottom-[14vh] mx-auto max-w-2xl px-6 text-center">
-          {/* Linia 1 + 2 — słowa wpadają po kolei (stagger ~150ms). Mapa zwraca
-              jeden <span> na słowo (bez mieszanych tablic [element, " "]), a spacja
-              siedzi w środku klipsa — żeby reconciliation nie remountował motion. */}
+          {/* Linia 1: "Tędy ucieka ciepło." — białe + czerwone "ciepło" */}
           <h1 className="font-jost text-display-sm font-bold text-white">
-            {WORDS_H1.map((word, i) => (
-              <span
-                key={`h1-${i}`}
-                className="inline-flex overflow-hidden align-bottom"
+            <span className="inline-block overflow-hidden align-bottom">
+              <motion.span
+                className="inline-block"
+                initial={reduce ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: 0 * 0.15, ease: "easeOut" }}
               >
-                <motion.span
-                  className={word.accent ? "text-tp-red" : undefined}
-                  initial={reduce ? false : { opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.4 }}
-                  transition={{ duration: 0.5, delay: i * 0.15, ease: "easeOut" }}
-                >
-                  {word.text}
-                </motion.span>
-                {i < WORDS_H1.length - 1 ? " " : null}
-              </span>
-            ))}
+                Tędy
+              </motion.span>
+            </span>{" "}
+            <span className="inline-block overflow-hidden align-bottom">
+              <motion.span
+                className="inline-block"
+                initial={reduce ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: 1 * 0.15, ease: "easeOut" }}
+              >
+                ucieka
+              </motion.span>
+            </span>{" "}
+            <span className="inline-block overflow-hidden align-bottom">
+              <motion.span
+                className="inline-block text-tp-red"
+                initial={reduce ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: 2 * 0.15, ease: "easeOut" }}
+              >
+                ciepło.
+              </motion.span>
+            </span>
           </h1>
+          {/* Linia 2: "Z każdego okna. Każdej zimy. Przez 30 lat." — szare, większe */}
           <p className="mt-3 text-pretty text-xl text-ink-2">
-            {WORDS_H2.map((word, i) => (
-              <span
-                key={`h2-${i}`}
-                className="inline-flex overflow-hidden align-bottom"
+            <span className="inline-block overflow-hidden align-bottom">
+              <motion.span
+                className="inline-block"
+                initial={reduce ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: 3 * 0.15, ease: "easeOut" }}
               >
-                <motion.span
-                  initial={reduce ? false : { opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.4 }}
-                  transition={{
-                    duration: 0.5,
-                    delay: (WORDS_H1.length + i) * 0.15,
-                    ease: "easeOut",
-                  }}
-                >
-                  {word.text}
-                </motion.span>
-                {i < WORDS_H2.length - 1 ? " " : null}
-              </span>
-            ))}
+                Z
+              </motion.span>
+            </span>{" "}
+            <span className="inline-block overflow-hidden align-bottom">
+              <motion.span
+                className="inline-block"
+                initial={reduce ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: 4 * 0.15, ease: "easeOut" }}
+              >
+                każdego
+              </motion.span>
+            </span>{" "}
+            <span className="inline-block overflow-hidden align-bottom">
+              <motion.span
+                className="inline-block"
+                initial={reduce ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: 5 * 0.15, ease: "easeOut" }}
+              >
+                okna.
+              </motion.span>
+            </span>{" "}
+            <span className="inline-block overflow-hidden align-bottom">
+              <motion.span
+                className="inline-block"
+                initial={reduce ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: 6 * 0.15, ease: "easeOut" }}
+              >
+                Każdej
+              </motion.span>
+            </span>{" "}
+            <span className="inline-block overflow-hidden align-bottom">
+              <motion.span
+                className="inline-block"
+                initial={reduce ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: 7 * 0.15, ease: "easeOut" }}
+              >
+                zimy.
+              </motion.span>
+            </span>{" "}
+            <span className="inline-block overflow-hidden align-bottom">
+              <motion.span
+                className="inline-block"
+                initial={reduce ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: 8 * 0.15, ease: "easeOut" }}
+              >
+                Przez
+              </motion.span>
+            </span>{" "}
+            <span className="inline-block overflow-hidden align-bottom">
+              <motion.span
+                className="inline-block"
+                initial={reduce ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: 9 * 0.15, ease: "easeOut" }}
+              >
+                30
+              </motion.span>
+            </span>{" "}
+            <span className="inline-block overflow-hidden align-bottom">
+              <motion.span
+                className="inline-block"
+                initial={reduce ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: 10 * 0.15, ease: "easeOut" }}
+              >
+                lat.
+              </motion.span>
+            </span>
           </p>
         </motion.div>
       </div>
