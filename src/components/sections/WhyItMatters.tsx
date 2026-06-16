@@ -57,8 +57,9 @@ export default function WhyItMatters() {
           <span className="text-eyebrow uppercase text-ink-2">
             Przewodność cieplna
           </span>
-          <h2 className="mt-5 text-balance font-jost text-display-sm font-bold leading-[1.05] text-tp-red">
-            Cała różnica mieści się w jednym materiale.
+          <h2 className="mt-5 text-balance font-jost text-display-sm font-bold leading-[1.05] text-black">
+            Cała różnica mieści się w{" "}
+            <span className="text-tp-red">jednym materiale.</span>
           </h2>
         </header>
 
