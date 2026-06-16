@@ -16,6 +16,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 export default function EdgeApproach() {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const playedRef = useRef(false);
   const reduce = useReducedMotion();
 
   const { scrollYProgress } = useScroll({
@@ -39,6 +40,36 @@ export default function EdgeApproach() {
     );
     io.observe(el);
     return () => io.disconnect();
+  }, []);
+
+  // Krótki scroll-lock (~1s) gdy sekcja wchodzi w kadr — "efekt doświadczenia".
+  // Odpala się RAZ, na wejściu w widok (nie na mount), więc NIE skacze przy
+  // ładowaniu strony. Bez lenisa = no-op (nie blokujemy natywnego scrolla).
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const lenis = (
+      window as unknown as { __lenis?: { stop: () => void; start: () => void } }
+    ).__lenis;
+    if (!lenis) return;
+    let unlockTimer: ReturnType<typeof setTimeout> | undefined;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !playedRef.current) {
+          playedRef.current = true;
+          lenis.stop();
+          unlockTimer = setTimeout(() => lenis.start(), 1000);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.5 },
+    );
+    io.observe(el);
+    return () => {
+      clearTimeout(unlockTimer);
+      lenis.start();
+      io.disconnect();
+    };
   }, []);
 
   const videoOpacity = useTransform(scrollYProgress, [0, 1], [1, 1]);
