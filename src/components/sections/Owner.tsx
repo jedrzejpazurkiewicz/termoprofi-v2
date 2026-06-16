@@ -182,7 +182,7 @@ export default function Owner() {
                           className="h-1 w-1 rotate-45 bg-tp-red"
                         />
                       )}
-                      <span className="text-eyebrow font-medium uppercase tracking-[0.22em] text-ink-2 transition-colors hover:text-ink">
+                      <span className="text-eyebrow font-medium uppercase tracking-[0.22em] text-white transition-colors hover:text-tp-red">
                         {word}
                       </span>
                     </li>
