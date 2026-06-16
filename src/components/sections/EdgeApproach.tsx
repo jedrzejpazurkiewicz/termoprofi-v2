@@ -58,7 +58,7 @@ export default function EdgeApproach() {
         if (entry.isIntersecting && !playedRef.current) {
           playedRef.current = true;
           lenis.stop();
-          unlockTimer = setTimeout(() => lenis.start(), 1000);
+          unlockTimer = setTimeout(() => lenis.start(), 2500);
           io.disconnect();
         }
       },
