@@ -125,16 +125,16 @@ export interface Country {
 }
 
 export const COUNTRIES: Country[] = [
-  { name: "Polska", flag: "🇵🇱", iso2: "PL", mapPos: { x: 51, y: 38 } },
-  { name: "Włochy", flag: "🇮🇹", iso2: "IT", mapPos: { x: 48, y: 47 } },
-  { name: "Ukraina", flag: "🇺🇦", iso2: "UA", mapPos: { x: 55, y: 36 } },
-  { name: "Bułgaria", flag: "🇧🇬", iso2: "BG", mapPos: { x: 54, y: 46 } },
-  { name: "Portugalia", flag: "🇵🇹", iso2: "PT", mapPos: { x: 36, y: 47 } },
-  { name: "Kanada", flag: "🇨🇦", iso2: "CA", mapPos: { x: 12, y: 22 } },
-  { name: "Korea Południowa", flag: "🇰🇷", iso2: "KR", mapPos: { x: 78, y: 38 } },
-  { name: "Rumunia", flag: "🇷🇴", iso2: "RO", mapPos: { x: 54, y: 42 } },
-  { name: "Kosowo", flag: "🇽🇰", iso2: "XK", mapPos: { x: 52, y: 46 } },
-  { name: "Niemcy", flag: "🇩🇪", iso2: "DE", mapPos: { x: 48, y: 36 } },
+  { name: "Polska", flag: "🇵🇱", iso2: "PL", mapPos: { x: 53, y: 32 } },
+  { name: "Włochy", flag: "🇮🇹", iso2: "IT", mapPos: { x: 50, y: 42 } },
+  { name: "Ukraina", flag: "🇺🇦", iso2: "UA", mapPos: { x: 56, y: 34 } },
+  { name: "Bułgaria", flag: "🇧🇬", iso2: "BG", mapPos: { x: 54, y: 41 } },
+  { name: "Portugalia", flag: "🇵🇹", iso2: "PT", mapPos: { x: 42, y: 45 } },
+  { name: "Kanada", flag: "🇨🇦", iso2: "CA", mapPos: { x: 16, y: 26 } },
+  { name: "Korea Południowa", flag: "🇰🇷", iso2: "KR", mapPos: { x: 78, y: 46 } },
+  { name: "Rumunia", flag: "🇷🇴", iso2: "RO", mapPos: { x: 54, y: 39 } },
+  { name: "Kosowo", flag: "🇽🇰", iso2: "XK", mapPos: { x: 53, y: 42 } },
+  { name: "Niemcy", flag: "🇩🇪", iso2: "DE", mapPos: { x: 50, y: 33 } },
   { name: "i wiele innych", flag: "🌍", iso2: "" },
 ];
 
