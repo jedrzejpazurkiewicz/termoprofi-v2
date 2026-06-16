@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -29,16 +29,100 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
  * are applied imperatively by GSAP only when motion is allowed.
  */
 
+/** Minimal shape of the shared Lenis instance exposed by SmoothScrollProvider. */
+type LenisLike = {
+  scrollTo: (
+    target: number,
+    opts?: { immediate?: boolean; force?: boolean; lock?: boolean },
+  ) => void;
+};
+
 const EASE = "power2.out";
 const STEP = 0.06; // seconds between words in act 1
 
 export default function BridgeStat() {
+  const section = useRef<HTMLElement>(null);
   const root = useRef<HTMLDivElement>(null);
+
+  // ── True scroll lock for the reveal (Lenis-aware) ──────────────────────────
+  // This site runs Lenis smooth-scroll, which reads wheel/touch deltas itself
+  // and IGNORES e.preventDefault() + body overflow:hidden. So we intercept on the
+  // CAPTURE phase (before Lenis' bubble-phase window listeners) and stopPropagation
+  // — Lenis then never sees the event. Only DOWNWARD intent is blocked, so the user
+  // can always scroll back UP to leave; keyboard down-keys are cancelled natively.
+  // No pin is used, so the 3D scroll-spine ([data-spine]) is left untouched.
+  const lockedRef = useRef(false);
+  const playedRef = useRef(false);
+  const touchYRef = useRef(0);
+  const handlers = useRef<{
+    wheel: (e: WheelEvent) => void;
+    touchStart: (e: TouchEvent) => void;
+    touchMove: (e: TouchEvent) => void;
+    key: (e: KeyboardEvent) => void;
+  } | null>(null);
+
+  if (!handlers.current) {
+    const DOWN_KEYS = new Set(["ArrowDown", "PageDown", "End", " ", "Spacebar"]);
+    const isField = (t: EventTarget | null) => {
+      const n = t as HTMLElement | null;
+      return (
+        !!n &&
+        (n.tagName === "INPUT" || n.tagName === "TEXTAREA" || n.isContentEditable)
+      );
+    };
+    handlers.current = {
+      wheel: (e) => {
+        if (lockedRef.current && e.deltaY > 0) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      },
+      touchStart: (e) => {
+        touchYRef.current = e.touches[0]?.clientY ?? 0;
+      },
+      touchMove: (e) => {
+        if (!lockedRef.current) return;
+        const y = e.touches[0]?.clientY ?? 0;
+        // finger up (y decreases) => content scrolls DOWN => block; up stays free.
+        if (y < touchYRef.current) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      },
+      key: (e) => {
+        if (!lockedRef.current || isField(e.target)) return;
+        if (DOWN_KEYS.has(e.key)) e.preventDefault();
+      },
+    };
+  }
+
+  const lockScroll = () => {
+    if (lockedRef.current) return;
+    lockedRef.current = true;
+    const h = handlers.current!;
+    window.addEventListener("wheel", h.wheel, { capture: true, passive: false });
+    window.addEventListener("touchmove", h.touchMove, { capture: true, passive: false });
+    window.addEventListener("touchstart", h.touchStart, { capture: true, passive: true });
+    window.addEventListener("keydown", h.key, { capture: true });
+  };
+
+  const unlockScroll = () => {
+    lockedRef.current = false;
+    const h = handlers.current!;
+    window.removeEventListener("wheel", h.wheel, { capture: true });
+    window.removeEventListener("touchmove", h.touchMove, { capture: true });
+    window.removeEventListener("touchstart", h.touchStart, { capture: true });
+    window.removeEventListener("keydown", h.key, { capture: true });
+  };
+
+  // React 18 StrictMode / unmount: never let listeners outlive the component.
+  useEffect(() => unlockScroll, []);
 
   useGSAP(
     () => {
       const el = root.current;
       if (!el) return;
+      const sec = section.current ?? el;
 
       const reduce = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
@@ -82,10 +166,40 @@ export default function BridgeStat() {
 
           const tl = gsap.timeline({
             scrollTrigger: {
-              trigger: el,
-              start: "top 65%",
+              trigger: sec,
+              start: "top top", // engage when the section reaches the top
               toggleActions: "play none none none", // play ONCE
+              onEnter: () => {
+                if (playedRef.current) return; // only the first reveal locks
+                playedRef.current = true;
+                // SNAP first: kill Lenis' residual momentum so the section sits
+                // EXACTLY at the top before we freeze — otherwise the ease carries
+                // it ~150px past the trigger and the Hero peeks above. Absolute Y
+                // via rect (offsetTop is relative to the offsetParent, unreliable).
+                const targetY = Math.round(
+                  window.scrollY + sec.getBoundingClientRect().top,
+                );
+                const lenis = (window as unknown as { __lenis?: LenisLike })
+                  .__lenis;
+                if (lenis) {
+                  lenis.scrollTo(targetY, {
+                    immediate: true,
+                    force: true,
+                    lock: false,
+                  });
+                } else {
+                  window.scrollTo({
+                    top: targetY,
+                    behavior: "instant" as ScrollBehavior,
+                  });
+                }
+                // Lock on the next frame so the snap paints before we freeze.
+                requestAnimationFrame(() =>
+                  requestAnimationFrame(() => lockScroll()),
+                );
+              },
             },
+            onComplete: unlockScroll, // release immediately when the reveal finishes
           });
 
           // ── ACT 1 — line 1, word by word ───────────────────────────────
@@ -129,6 +243,7 @@ export default function BridgeStat() {
                 y: 0,
                 duration: 0.8 * k,
                 ease: EASE,
+                onComplete: unlockScroll, // PRIMARY: unlock as soon as "Mała rzecz. Duży efekt." lands (~2s)
               },
               `>${0.4 * k}`,
             );
@@ -147,7 +262,7 @@ export default function BridgeStat() {
             );
           }
 
-          // ── ACT 4 — "Dowiedz się więcej" link, ~0.6s after act 3 ────
+          // ── ACT 4 — "Dowiedz się więcej" link, ~0.6s after act 3 ────────
           if (link) {
             gsap.set(link, { opacity: 0, y: 12 });
             tl.to(
@@ -169,8 +284,10 @@ export default function BridgeStat() {
 
   return (
     <section
+      id="hero-22"
+      ref={section}
       aria-label="Do 22% mniej strat ciepła"
-      className="relative flex min-h-[80svh] items-center justify-center px-6 py-24"
+      className="relative flex min-h-[100svh] items-center justify-center px-6 py-24"
     >
       {/* Subtle warm glow behind the stat — keeps the dark slab from going flat. */}
       <div

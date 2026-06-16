@@ -258,12 +258,30 @@ export default function GlassUnit() {
     };
   }, []);
 
+  // Emergency safety net: if nobody has raised the group's scale within 2s
+  // (e.g. SceneController's useFrame never ran — cold start / StrictMode
+  // double-mount), force it visible — but ONLY while Discovery is on screen, so
+  // it matches the controller's gate and never leaks the unit into other sections.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const g = group.current;
+      if (g && g.scale.x === 0 && scroll.discoveryInView) g.scale.set(1, 1, 1);
+    }, 2000);
+    return () => clearTimeout(t);
+  }, []);
+
   useEffect(() => {
     if (modelReady || useFallback) return;
     const t = setTimeout(() => {
       if (!modelReady) setUseFallback(true);
-    }, 5000);
+    }, 2500);
     return () => clearTimeout(t);
+  }, [modelReady, useFallback]);
+
+  // If the real model becomes ready while the fallback is showing, prefer the
+  // real unit over the procedural one.
+  useEffect(() => {
+    if (modelReady && useFallback) setUseFallback(false);
   }, [modelReady, useFallback]);
 
   return (

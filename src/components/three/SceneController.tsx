@@ -114,7 +114,7 @@ export default function SceneController() {
     // okno"). Delayed vs the appear so it reads as emerge → then disassemble.
     if (panes.length) {
       const exp = clamp01((b1 - 0.25) / 0.75);
-      const spread = 2.4; // multiplier on each pane's offset from the centre
+      const spread = 0.6; // gentle separation — keep the unit reading as ONE package
       for (let i = 0; i < panes.length; i++) {
         const pane = panes[i];
         const targetX =
@@ -130,22 +130,15 @@ export default function SceneController() {
       easing.dampE(group.rotation, [group.rotation.x, targetY, 0], 0.5, delta);
     }
 
-    // APPEAR: the unit scales in as Discovery enters — anchored to beat 1's
-    // LOCAL progress (not the global spine progress), so it always reveals at
-    // the "Widzisz tę małą ramkę" moment regardless of how much lead-in
-    // (hero / bridge / dolot) precedes it in the spine.
+    // APPEAR: the unit is visible ONLY while the Discovery section is on screen,
+    // so it never leaks into Hero / BridgeStat / EdgeApproach above it. We gate on
+    // `discoveryInView`, which is recomputed every few frames from the section's
+    // LIVE DOM rect (bulletproof — independent of ScrollTrigger / Lenis / progress
+    // timing). That robust signal + the eased damp give a smooth fade in/out
+    // without the flicker that the old progress-based gating caused.
     if (group) {
-      // Emerge from the dolot (the second film) via the global spine progress —
-      // the original, well-loved behaviour: the unit scales in as the camera
-      // reaches the window edge (~p 0.34). The IntersectionObserver floor also
-      // forces it visible whenever Discovery is on screen (belt-and-suspenders,
-      // so it can never silently stay invisible).
-      const appear = Math.max(
-        clamp01((p - 0.34) / 0.12),
-        scroll.discoveryInView ? 1 : 0,
-      );
-      const sa = appear * appear * (3 - 2 * appear);
-      easing.damp3(group.scale, [sa, sa, sa], 0.25, delta);
+      const appear = scroll.discoveryInView ? 1 : 0;
+      easing.damp3(group.scale, [appear, appear, appear], 0.3, delta);
     }
 
     // HEAT: ramp 0.3 → 1.0 as the reveal progresses. Weight it toward the

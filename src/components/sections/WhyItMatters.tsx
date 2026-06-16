@@ -16,7 +16,8 @@ import { MATERIALS, STATS } from "@/lib/constants";
  * curve, which makes the FIBERTHERM bar (0.3) collapse to a thin sliver. That
  * visual collapse *is* the argument; the caption names the ~500× gap.
  *
- * Part B — the three headline statistics, counting up as they enter view.
+ * Part B — the three headline statistics. The boxes slide in from the side
+ * one after another, then the numbers count up as they enter view.
  */
 
 const MAX_LAMBDA = Math.max(...MATERIALS.map((m) => m.v));
@@ -146,19 +147,29 @@ export default function WhyItMatters() {
         </div>
 
         {/* ── Part B — headline statistics ─────────────────────────────── */}
+        {/* Each box slides in from the side, one after another (staggered by
+            index), so the row assembles left-to-right as it enters view. */}
         <div className="mt-section grid grid-cols-1 gap-px overflow-hidden rounded-3xl border border-hairline bg-hairline sm:grid-cols-3">
-          {STATS.map((stat) => (
-            <div
+          {STATS.map((stat, i) => (
+            <motion.div
               key={stat.label}
               className="flex flex-col items-start gap-3 bg-surface/70 px-7 py-11 backdrop-blur-md sm:py-14"
+              initial={reduceMotion ? false : { opacity: 0, x: -52 }}
+              whileInView={reduceMotion ? undefined : { opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.7, ease: EASE_OUT, delay: 0.14 * i }}
             >
               <span className="font-jost text-[clamp(2.75rem,5vw,4.25rem)] font-bold leading-none text-ink">
-                <CountUp value={stat.value} suffix={stat.suffix} />
+                <CountUp
+                  value={stat.value}
+                  suffix={stat.suffix}
+                  decimals={stat.decimals ?? 0}
+                />
               </span>
               <span className="text-sm leading-snug text-ink-2">
                 {stat.label}
               </span>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

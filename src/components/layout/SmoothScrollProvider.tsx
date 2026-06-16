@@ -35,6 +35,10 @@ export default function SmoothScrollProvider({
       smoothWheel: !reduced,
     });
 
+    // Expose the single Lenis instance so an isolated effect (the BridgeStat
+    // scroll-lock) can snap scroll without re-creating Lenis. Removed on cleanup.
+    (window as Window & { __lenis?: Lenis }).__lenis = lenis;
+
     // Keep ScrollTrigger in lockstep with Lenis' smoothed position.
     lenis.on("scroll", ScrollTrigger.update);
 
@@ -61,6 +65,7 @@ export default function SmoothScrollProvider({
       gsap.ticker.remove(tick);
       lenis.off("scroll", ScrollTrigger.update);
       lenis.destroy();
+      delete (window as Window & { __lenis?: Lenis }).__lenis;
     };
   }, []);
 

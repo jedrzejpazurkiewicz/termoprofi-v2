@@ -9,8 +9,9 @@ import { PRODUCTS } from "@/lib/constants";
 /**
  * Nasze produkty — the catalogue overview.
  *
- * Three interactive cards (ramki dystansowe / szprosy / akcesoria) pulled from
- * PRODUCTS sit side-by-side on desktop and stack to one column on mobile. Each
+ * Two interactive cards (ramki dystansowe i akcesoria / szprosy i akcesoria)
+ * pulled from PRODUCTS sit side-by-side on desktop and stack to one column on
+ * mobile. Akcesoria are folded into both cards rather than standing alone. Each
  * leads with a Gabriel 3D render or product photo in a recessed, hairline-framed
  * well, then the tagline (tp-red eyebrow), name (Jost), description, tp-red dot
  * bullets, and a ghost "Zamów próbkę" CTA pinned to the bottom so cards align.
@@ -23,16 +24,12 @@ import { PRODUCTS } from "@/lib/constants";
 /** Map product id → hero image (renders / photos live in /public/images). */
 const PRODUCT_IMAGES: Record<string, { src: string; alt: string }> = {
   "ramki-dystansowe": {
-    src: "/images/gabriel-3d-1.png",
-    alt: "Ramka dystansowa FIBERTHERM — profil ciepłej krawędzi w pakiecie szybowym",
+    src: "/images/ramka-dystansowa.png",
+    alt: "Ramka dystansowa FIBERTHERM — profil ciepłej krawędzi w przekroju pakietu szybowego",
   },
   szprosy: {
     src: "/images/szpros.png",
     alt: "Szpros wewnątrzszybowy TermoProfi dzielący taflę pakietu",
-  },
-  akcesoria: {
-    src: "/images/gabriel-3d-2.png",
-    alt: "Akcesoria montażowe TermoProfi — łączniki i komponenty pakietu",
   },
 };
 
@@ -52,7 +49,7 @@ export default function Products() {
       <ScrollReveal
         stagger
         y={28}
-        className="mt-14 grid grid-cols-1 gap-6 sm:mt-16 lg:grid-cols-3"
+        className="mt-14 grid grid-cols-1 gap-6 sm:mt-16 lg:grid-cols-2"
       >
         {PRODUCTS.map((product) => {
           const image = PRODUCT_IMAGES[product.id];
@@ -71,7 +68,7 @@ export default function Products() {
                     src={image.src}
                     alt={image.alt}
                     fill
-                    sizes="(min-width: 1024px) 360px, (min-width: 640px) 90vw, 100vw"
+                    sizes="(min-width: 1024px) 600px, (min-width: 640px) 90vw, 100vw"
                     className="object-cover transition-transform duration-700 ease-calm group-hover/well:scale-[1.04]"
                   />
                 ) : null}

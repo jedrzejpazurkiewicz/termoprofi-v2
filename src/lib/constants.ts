@@ -88,12 +88,30 @@ export interface Stat {
   value: number;
   suffix: string;
   label: string;
+  /** Decimal places for the count-up (e.g. 2 → "7,69"). Defaults to 0. */
+  decimals?: number;
 }
 
 export const STATS: Stat[] = [
-  { value: 22, suffix: "%", label: "mniej strat energii" },
-  { value: 70, suffix: "%", label: "mniej kondensacji" },
-  { value: 30, suffix: " lat", label: "żywotności (EN 1279)" },
+  {
+    value: 7.69,
+    suffix: "%",
+    decimals: 2,
+    label:
+      "Większa wysokość profili TermoProfi w porównaniu do produktów konkurencyjnych zapewnia wyższą sztywność konstrukcji oraz mniejsze ugięcia.",
+  },
+  {
+    value: 22,
+    suffix: "%",
+    label:
+      "Z ramkami dystansowymi TermoProfi straty energii cieplnej przez okno są nawet o 22% niższe w porównaniu do tradycyjnych ramek aluminiowych.",
+  },
+  {
+    value: 70,
+    suffix: "%",
+    label:
+      "Prawdopodobieństwo wystąpienia kondensacji pary wodnej na szybie jest o 70% mniejsze niż dla szyb z ramką aluminiową.",
+  },
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -153,38 +171,28 @@ export interface Product {
 export const PRODUCTS: Product[] = [
   {
     id: "ramki-dystansowe",
-    name: "Ramki dystansowe",
+    name: "Ramki dystansowe i akcesoria",
     tagline: "Serce ciepłej krawędzi",
     description:
-      "Profil FIBERTHERM z kompozytu wzmacnianego włóknem szklanym oddziela szyby zespolone, niemal całkowicie eliminując mostek termiczny na krawędzi pakietu. Cieplej przy ramie, mniej kondensacji, wyższa klasa energetyczna okna.",
+      "Profil FIBERTHERM z kompozytu wzmacnianego włóknem szklanym oddziela szyby zespolone, niemal całkowicie eliminując mostek termiczny na krawędzi pakietu. W komplecie łączniki, narożniki i korki, które dopinają cały pakiet.",
     features: [
       "Przewodność λ na poziomie 0,3 W/(m·K)",
       "Zgodność z normą EN 1279",
       "Dostępne w szerokim zakresie szerokości i kolorów",
+      "Łączniki, narożniki i korki dopasowane do profili",
     ],
   },
   {
     id: "szprosy",
-    name: "Szprosy",
+    name: "Szprosy i akcesoria",
     tagline: "Detal, który definiuje styl",
     description:
-      "Szprosy wewnątrzszybowe i konstrukcyjne, które dzielą taflę bez utraty szczelności i estetyki pakietu. Precyzyjne łączenia, równe podziały i powtarzalna jakość w każdej serii.",
+      "Szprosy wewnątrzszybowe i konstrukcyjne, które dzielą taflę bez utraty szczelności i estetyki pakietu. Wraz z kompletem komponentów montażowych, które przyspieszają i porządkują produkcję.",
     features: [
       "Bogata paleta profili i kolorów",
       "Idealne podziały dla okien stylowych i historyzujących",
       "Trwałe, odporne na warunki we wnętrzu pakietu",
-    ],
-  },
-  {
-    id: "akcesoria",
-    name: "Akcesoria",
-    tagline: "Wszystko, co spina pakiet",
-    description:
-      "Łączniki, narożniki, korki i komponenty montażowe dopracowane tak, by produkcja szyby zespolonej była szybka, czysta i powtarzalna. Kompletny system, który po prostu pasuje.",
-    features: [
-      "Łączniki proste i narożne dopasowane do profili",
-      "Komponenty wspierające automatyzację produkcji",
-      "Pełna kompatybilność z ramkami TermoProfi",
+      "Komponenty montażowe wspierające automatyzację produkcji",
     ],
   },
 ];

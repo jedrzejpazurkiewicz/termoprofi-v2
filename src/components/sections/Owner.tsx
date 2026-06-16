@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -16,12 +16,14 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
  * Owner — "Właściciel" / founder's word.
  *
  * Editorial 50/50 split: on the left a framed portrait of the factory profile,
- * on the right a generous Jost-italic pull-quote that reveals clause-by-clause
- * on scroll, signed with the owner's name and a values motto.
+ * on the right a generous Jost-italic pull-quote that reveals word-by-word on
+ * scroll — each word lifts and sharpens out of a soft blur, with a longer beat
+ * after commas and the final stop, so the sentence reads as if Andrzej is
+ * speaking it. Signed with the owner's name and a values motto.
  *
  * The quote copy is split locally into reading-friendly lines purely for the
- * staggered reveal; OWNER (constants) remains the single source of truth for
- * the words, the author and the role.
+ * editorial line breaks; OWNER (constants) remains the single source of truth
+ * for the words, the author and the role.
  */
 
 /** Local presentation split of OWNER.quote into balanced lines for the reveal. */
@@ -48,34 +50,49 @@ export default function Owner() {
       const el = quoteRef.current;
       if (!el) return;
 
-      const lines = el.querySelectorAll<HTMLElement>("[data-quote-line]");
-      if (lines.length === 0) return;
+      const words = el.querySelectorAll<HTMLElement>("[data-quote-word]");
+      if (words.length === 0) return;
 
       const reduce = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
 
       if (reduce) {
-        gsap.set(lines, { opacity: 1, y: 0 });
+        gsap.set(words, { opacity: 1, y: 0, filter: "blur(0px)" });
         return;
       }
 
-      gsap.fromTo(
-        lines,
-        { opacity: 0, y: 18 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.85,
-          ease: "power3.out",
-          stagger: 0.12,
-          scrollTrigger: {
-            trigger: el,
-            start: "top 80%",
-            toggleActions: "play none none none",
-          },
+      gsap.set(words, { opacity: 0, y: 14, filter: "blur(6px)" });
+
+      // Each word is placed on the timeline by hand so the cadence can breathe:
+      // a steady beat between words, a longer pause after a comma, and a final
+      // settle on the closing stop — the rhythm of someone speaking the line.
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: el,
+          start: "top 78%",
+          toggleActions: "play none none none",
         },
-      );
+      });
+
+      let at = 0;
+      words.forEach((word) => {
+        tl.to(
+          word,
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.55,
+            ease: "power3.out",
+          },
+          at,
+        );
+        const text = (word.textContent ?? "").trim();
+        at += 0.08; // base beat between words
+        if (/[.!?]$/.test(text)) at += 0.34; // full stop — let it land
+        else if (/[,;:]$/.test(text)) at += 0.24; // pause — a breath
+      });
     },
     { scope: quoteRef },
   );
@@ -137,19 +154,22 @@ export default function Owner() {
               {QUOTE_LINES.map((line, i) => {
                 const words = line.split(" ");
                 return (
-                  <span key={i} data-quote-line className="block">
+                  <span key={i} className="block">
                     {words.map((word, j) => (
-                      <span
-                        key={j}
-                        className={
-                          HIGHLIGHT.has(normalizeWord(word))
-                            ? "text-tp-red"
-                            : undefined
-                        }
-                      >
-                        {word}
+                      <Fragment key={j}>
+                        <span
+                          data-quote-word
+                          className={
+                            "inline-block will-change-[transform,opacity,filter]" +
+                            (HIGHLIGHT.has(normalizeWord(word))
+                              ? " text-tp-red"
+                              : "")
+                          }
+                        >
+                          {word}
+                        </span>
                         {j < words.length - 1 ? " " : ""}
-                      </span>
+                      </Fragment>
                     ))}
                   </span>
                 );
