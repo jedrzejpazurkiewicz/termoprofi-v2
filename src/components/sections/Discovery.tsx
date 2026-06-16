@@ -34,6 +34,9 @@ export default function Discovery() {
   );
   const copyY = useTransform(scrollYProgress, [0.08, 0.4], [40, 0]);
   const accentWidth = useTransform(scrollYProgress, [0.2, 0.6], ["0%", "100%"]);
+  // Film wjeżdża z góry i pojawia się w miarę scrolla przez sekcję (paralaksa).
+  const videoY = useTransform(scrollYProgress, [0.1, 0.6], [-150, 0]);
+  const videoOpacity = useTransform(scrollYProgress, [0.1, 0.4], [0, 1]);
 
   // Reliable "Discovery is on screen" signal for the 3D layer — drives the
   // unit's visibility independent of GSAP/ScrollTrigger/pin refresh quirks.
@@ -91,7 +94,10 @@ export default function Discovery() {
           </motion.div>
 
           {/* RIGHT — film z przekrojem okna */}
-          <div className="relative aspect-video w-full overflow-hidden rounded-2xl">
+          <motion.div
+            className="relative aspect-video w-full overflow-hidden rounded-2xl"
+            style={reduceMotion ? undefined : { y: videoY, opacity: videoOpacity }}
+          >
             <video
               src="/videos/okno.mp4"
               autoPlay
@@ -101,7 +107,7 @@ export default function Discovery() {
               aria-label="Przekrój pakietu szyby zespolonej — film poglądowy FIBERTHERM"
               className="absolute inset-0 h-full w-full object-cover"
             />
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
