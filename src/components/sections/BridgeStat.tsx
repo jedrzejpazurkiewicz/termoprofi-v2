@@ -48,11 +48,12 @@ export default function BridgeStat() {
       const stat = el.querySelector<HTMLElement>("[data-bridge-stat]");
       const line2 = el.querySelector<HTMLElement>("[data-bridge-line2]");
       const line3 = el.querySelector<HTMLElement>("[data-bridge-line3]");
+      const link = el.querySelector<HTMLElement>("[data-bridge-link]");
 
       // Reduced motion: everything is already in its final visual state in the
       // DOM; just make sure nothing is left hidden and bail out.
       if (reduce) {
-        gsap.set([...words, stat, line2, line3], {
+        gsap.set([...words, stat, line2, line3, link], {
           clearProps: "all",
           opacity: 1,
         });
@@ -145,6 +146,21 @@ export default function BridgeStat() {
               `>${0.6 * k}`,
             );
           }
+
+          // ── ACT 4 — "Dowiedz się więcej" link, ~0.6s after act 3 ────
+          if (link) {
+            gsap.set(link, { opacity: 0, y: 12 });
+            tl.to(
+              link,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.6 * k,
+                ease: EASE,
+              },
+              `>${0.6 * k}`,
+            );
+          }
         },
       );
     },
@@ -212,6 +228,31 @@ export default function BridgeStat() {
         >
           Reszta ucieka standardowym oknem —{" "}
           <span className="text-ink">u Ciebie zostaje w domu.</span>
+        </p>
+
+        {/* ACT 4 — "Dowiedz się więcej" link ze strzałką, pojawia się po ACT 3 */}
+        <p
+          data-bridge-link
+          className="mx-auto mt-8 flex items-center justify-center gap-2 text-sm font-medium uppercase tracking-[0.18em] text-ink-2 sm:text-base"
+        >
+          <a
+            href="#fibertherm"
+            className="group inline-flex items-center gap-2 transition-colors duration-300 ease-calm hover:text-tp-red"
+          >
+            <span>Dowiedz się więcej</span>
+            <svg
+              aria-hidden
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4 transition-transform duration-300 ease-calm group-hover:translate-y-1"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </a>
         </p>
       </div>
     </section>
