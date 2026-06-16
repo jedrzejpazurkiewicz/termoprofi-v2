@@ -119,40 +119,38 @@ export default function EdgeApproach() {
         </motion.div>
 
         <motion.div className="absolute inset-x-0 bottom-[14vh] mx-auto max-w-2xl px-6 text-center">
-          {/* Linia 1 — słowa wpadają po kolei (co ~150ms) */}
+          {/* Linia 1 + 2 — słowa wpadają po kolei (stagger ~150ms). Mapa zwraca
+              jeden <span> na słowo (bez mieszanych tablic [element, " "]), a spacja
+              siedzi w środku klipsa — żeby reconciliation nie remountował motion. */}
           <h1 className="font-jost text-display-sm font-bold text-white">
-            {WORDS_H1.flatMap((word, i) => [
+            {WORDS_H1.map((word, i) => (
               <span
                 key={`h1-${i}`}
-                className="inline-block overflow-hidden align-bottom"
+                className="inline-flex overflow-hidden align-bottom"
               >
                 <motion.span
-                  className={
-                    word.accent ? "inline-block text-tp-red" : "inline-block"
-                  }
+                  className={word.accent ? "text-tp-red" : undefined}
                   initial={reduce ? false : { opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.5 }}
+                  viewport={{ once: true, amount: 0.4 }}
                   transition={{ duration: 0.5, delay: i * 0.15, ease: "easeOut" }}
                 >
                   {word.text}
                 </motion.span>
-              </span>,
-              " ",
-            ])}
+                {i < WORDS_H1.length - 1 ? " " : null}
+              </span>
+            ))}
           </h1>
-          {/* Linia 2 — kontynuacja sekwencji, po słowach z linii 1 */}
           <p className="mt-3 text-pretty text-xl text-ink-2">
-            {WORDS_H2.flatMap((word, i) => [
+            {WORDS_H2.map((word, i) => (
               <span
                 key={`h2-${i}`}
-                className="inline-block overflow-hidden align-bottom"
+                className="inline-flex overflow-hidden align-bottom"
               >
                 <motion.span
-                  className="inline-block"
                   initial={reduce ? false : { opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.5 }}
+                  viewport={{ once: true, amount: 0.4 }}
                   transition={{
                     duration: 0.5,
                     delay: (WORDS_H1.length + i) * 0.15,
@@ -161,9 +159,9 @@ export default function EdgeApproach() {
                 >
                   {word.text}
                 </motion.span>
-              </span>,
-              " ",
-            ])}
+                {i < WORDS_H2.length - 1 ? " " : null}
+              </span>
+            ))}
           </p>
         </motion.div>
       </div>
