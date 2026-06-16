@@ -108,7 +108,8 @@ export default function EdgeApproach() {
               <motion.span
                 className="inline-block"
                 initial={reduce ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0 }}
                 transition={{ duration: 0.5, delay: 0 * 0.15, ease: "easeOut" }}
               >
                 Tędy
@@ -118,7 +119,8 @@ export default function EdgeApproach() {
               <motion.span
                 className="inline-block"
                 initial={reduce ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0 }}
                 transition={{ duration: 0.5, delay: 1 * 0.15, ease: "easeOut" }}
               >
                 ucieka
@@ -128,7 +130,8 @@ export default function EdgeApproach() {
               <motion.span
                 className="inline-block text-tp-red"
                 initial={reduce ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0 }}
                 transition={{ duration: 0.5, delay: 2 * 0.15, ease: "easeOut" }}
               >
                 ciepło.
@@ -141,7 +144,8 @@ export default function EdgeApproach() {
               <motion.span
                 className="inline-block"
                 initial={reduce ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0 }}
                 transition={{ duration: 0.5, delay: 3 * 0.15, ease: "easeOut" }}
               >
                 Z
@@ -151,7 +155,8 @@ export default function EdgeApproach() {
               <motion.span
                 className="inline-block"
                 initial={reduce ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0 }}
                 transition={{ duration: 0.5, delay: 4 * 0.15, ease: "easeOut" }}
               >
                 każdego
@@ -161,7 +166,8 @@ export default function EdgeApproach() {
               <motion.span
                 className="inline-block"
                 initial={reduce ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0 }}
                 transition={{ duration: 0.5, delay: 5 * 0.15, ease: "easeOut" }}
               >
                 okna.
@@ -171,7 +177,8 @@ export default function EdgeApproach() {
               <motion.span
                 className="inline-block"
                 initial={reduce ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0 }}
                 transition={{ duration: 0.5, delay: 6 * 0.15, ease: "easeOut" }}
               >
                 Każdej
@@ -181,7 +188,8 @@ export default function EdgeApproach() {
               <motion.span
                 className="inline-block"
                 initial={reduce ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0 }}
                 transition={{ duration: 0.5, delay: 7 * 0.15, ease: "easeOut" }}
               >
                 zimy.
@@ -191,7 +199,8 @@ export default function EdgeApproach() {
               <motion.span
                 className="inline-block"
                 initial={reduce ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0 }}
                 transition={{ duration: 0.5, delay: 8 * 0.15, ease: "easeOut" }}
               >
                 Przez
@@ -201,7 +210,8 @@ export default function EdgeApproach() {
               <motion.span
                 className="inline-block"
                 initial={reduce ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0 }}
                 transition={{ duration: 0.5, delay: 9 * 0.15, ease: "easeOut" }}
               >
                 30
@@ -211,7 +221,8 @@ export default function EdgeApproach() {
               <motion.span
                 className="inline-block"
                 initial={reduce ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0 }}
                 transition={{ duration: 0.5, delay: 10 * 0.15, ease: "easeOut" }}
               >
                 lat.
