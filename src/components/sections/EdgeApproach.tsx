@@ -48,15 +48,6 @@ export default function EdgeApproach() {
     [0, 1, 1, 0],
   );
   const copyY = useTransform(scrollYProgress, [0.05, 0.2], [24, 0]);
-  // Film "zjeżdża z góry" przy wejściu: startuje wyżej i wyblakły, dojeżdża do
-  // finalnej pozycji w pierwszej połowie scrolla. (MotionValue * MotionValue nie
-  // działa w JSX, więc oba opacity łączymy osobnym useTransform.)
-  const videoEnterY = useTransform(scrollYProgress, [0, 0.5], [-250, 0]);
-  const videoEnterOpacity = useTransform(scrollYProgress, [0, 0.2], [0.3, 1]);
-  const videoOpacityCombined = useTransform(
-    [videoEnterOpacity, videoOpacity],
-    ([enter, base]: number[]) => enter * base,
-  );
 
   return (
     <section
@@ -65,14 +56,7 @@ export default function EdgeApproach() {
       aria-label="Tędy ucieka ciepło — dolot do krawędzi okna"
     >
       <div className="sticky top-0 h-[100svh] overflow-hidden">
-        <motion.div
-          className="absolute inset-0"
-          style={
-            reduce
-              ? { opacity: 1 }
-              : { y: videoEnterY, opacity: videoOpacityCombined }
-          }
-        >
+        <motion.div className="absolute inset-0" style={{ opacity: videoOpacity }}>
           <video
             ref={videoRef}
             muted
