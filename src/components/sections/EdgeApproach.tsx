@@ -52,7 +52,7 @@ export default function EdgeApproach() {
   return (
     <section
       ref={ref}
-      className="relative h-[160vh] bg-bg/60"
+      className="relative h-[160vh] bg-white"
       aria-label="Tędy ucieka ciepło — dolot do krawędzi okna"
     >
       <div className="sticky top-0 h-[100svh] overflow-hidden">
