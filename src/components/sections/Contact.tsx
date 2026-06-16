@@ -42,7 +42,7 @@ type Status = "idle" | "loading" | "success" | "error";
 
 const selectLabel = "mb-2 block font-inter text-sm font-medium text-ink-2";
 const selectField =
-  "w-full appearance-none rounded-xl border border-hairline bg-white/[0.02] px-4 py-3.5 pr-11 font-inter text-[0.95rem] text-ink transition-colors duration-300 ease-calm focus:border-tp-red/60 focus:bg-white/[0.04] focus:outline-none disabled:opacity-50";
+  "w-full appearance-none rounded-xl border border-white/15 bg-white/[0.08] px-4 py-3.5 pr-11 font-inter text-[0.95rem] text-ink transition-all duration-200 ease-calm hover:border-tp-red/40 hover:bg-white/[0.10] focus:border-tp-red focus:bg-white/[0.12] focus:shadow-[0_0_0_3px_rgba(207,46,46,0.15)] focus:outline-none disabled:opacity-50";
 
 function Spinner() {
   return (
@@ -229,7 +229,11 @@ export function Contact() {
           delay={0.08}
           className="relative rounded-3xl border border-hairline bg-gradient-to-b from-white/[0.045] to-white/[0.01] p-7 shadow-ambient sm:p-9"
         >
-          <form noValidate onSubmit={handleSubmit(onSubmit)}>
+          <form
+            noValidate
+            onSubmit={handleSubmit(onSubmit)}
+            className="transition-transform duration-300 ease-calm hover:scale-[1.02]"
+          >
             {/* Honeypot — ukryty przed użytkownikami i czytnikami ekranu */}
             <div className="absolute left-[-9999px] top-0" aria-hidden>
               <label htmlFor="website">Nie wypełniaj tego pola</label>

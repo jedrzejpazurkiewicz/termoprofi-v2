@@ -6,9 +6,9 @@ function cx(...parts: Array<string | false | undefined>): string {
 }
 
 const fieldBase =
-  "w-full rounded-xl border border-hairline bg-white/[0.02] px-4 py-3.5 font-inter text-[0.95rem] text-ink placeholder:text-ink-2/60 transition-colors duration-300 ease-calm focus:border-tp-red/60 focus:bg-white/[0.04] focus:outline-none disabled:opacity-50";
+  "w-full rounded-xl border border-white/15 bg-white/[0.08] px-4 py-3.5 font-inter text-[0.95rem] text-ink placeholder:text-white/35 transition-all duration-200 ease-calm hover:border-tp-red/40 hover:bg-white/[0.10] focus:border-tp-red focus:bg-white/[0.12] focus:shadow-[0_0_0_3px_rgba(207,46,46,0.15)] focus:outline-none disabled:opacity-50";
 
-const labelBase = "mb-2 block font-inter text-sm font-medium text-ink-2";
+const labelBase = "mb-2 block font-inter text-sm font-medium text-white/80";
 const errorBase = "mt-1.5 text-sm text-tp-red";
 
 export interface FormInputProps
