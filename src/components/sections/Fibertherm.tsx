@@ -66,7 +66,7 @@ export default function Fibertherm() {
       <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
         <ScrollReveal>
           <div>
-            <h2 className="text-balance font-jost text-display-sm font-bold text-ink">
+            <h2 className="text-balance font-jost text-display-sm font-bold text-black">
               Materiał, który zmienia regułę.
             </h2>
             <div className="mt-7 max-w-prose space-y-5 text-pretty text-lg leading-relaxed text-ink-2">
