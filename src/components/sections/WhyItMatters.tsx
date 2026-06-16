@@ -45,7 +45,7 @@ export default function WhyItMatters() {
   return (
     <section
       id="dlaczego"
-      className="relative py-section bg-bg/60"
+      className="relative py-section bg-bg/40"
       aria-label="Dlaczego to ma znaczenie"
     >
       {/* Heat-peak beat for the 3D scene. */}
