@@ -67,26 +67,42 @@ export default function Discovery() {
 
       {/* Pinned narrative — sits in front of the canvas, centred in the viewport. */}
       <div className="sticky top-0 flex h-[100svh] items-center justify-start">
-        <motion.div
-          className="max-w-lg px-8 text-left md:pl-16"
-          style={reduceMotion ? undefined : { opacity: copyOpacity, y: copyY }}
-        >
-          <p className="text-balance font-jost text-display-sm font-bold text-[#14171c]">
-            Widzisz tę małą ramkę?
-          </p>
-          <p className="mt-3 text-balance font-jost text-display-sm font-bold text-tp-red">
-            To jest FIBERTHERM.
-          </p>
-          <motion.span
-            aria-hidden
-            className="mt-8 block h-px max-w-xs bg-gradient-to-r from-tp-red/70 to-transparent"
-            style={reduceMotion ? undefined : { width: accentWidth }}
-          />
-          <p className="mt-8 max-w-md text-pretty text-base leading-relaxed text-[#3b424e]">
-            Ramka dystansowa rozdziela szyby w pakiecie. To właśnie tędy — jej
-            krawędzią — ucieka najwięcej ciepła z całego okna.
-          </p>
-        </motion.div>
+        <div className="grid w-full grid-cols-1 items-center gap-6 px-8 md:grid-cols-[2fr_3fr] md:gap-12 md:pl-16 md:pr-12">
+          {/* LEFT — tekst narracyjny */}
+          <motion.div
+            className="max-w-lg text-left"
+            style={reduceMotion ? undefined : { opacity: copyOpacity, y: copyY }}
+          >
+            <p className="text-balance font-jost text-display-sm font-bold text-[#14171c]">
+              Widzisz tę małą ramkę?
+            </p>
+            <p className="mt-3 text-balance font-jost text-display-sm font-bold text-tp-red">
+              To jest FIBERTHERM.
+            </p>
+            <motion.span
+              aria-hidden
+              className="mt-8 block h-px max-w-xs bg-gradient-to-r from-tp-red/70 to-transparent"
+              style={reduceMotion ? undefined : { width: accentWidth }}
+            />
+            <p className="mt-8 max-w-md text-pretty text-base leading-relaxed text-[#3b424e]">
+              Ramka dystansowa rozdziela szyby w pakiecie. To właśnie tędy — jej
+              krawędzią — ucieka najwięcej ciepła z całego okna.
+            </p>
+          </motion.div>
+
+          {/* RIGHT — film z przekrojem okna */}
+          <div className="relative aspect-video w-full overflow-hidden rounded-2xl">
+            <video
+              src="/videos/okno.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-label="Przekrój pakietu szyby zespolonej — film poglądowy FIBERTHERM"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </div>
+        </div>
       </div>
     </section>
   );
