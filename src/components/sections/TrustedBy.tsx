@@ -124,11 +124,11 @@ export default function TrustedBy() {
                   <div
                     key={pin.iso2}
                     aria-hidden
-                    className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
+                    className="pointer-events-none absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2"
                     style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
                   >
                     <span
-                      className="absolute left-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tp-red/30 animate-ping"
+                      className="absolute inset-0 rounded-full bg-tp-red/30 animate-ping"
                       style={{
                         animationDelay: `${i * 0.15}s`,
                         animationDuration: "2.4s",
