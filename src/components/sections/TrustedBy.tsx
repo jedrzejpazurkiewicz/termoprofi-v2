@@ -110,16 +110,16 @@ export default function TrustedBy() {
                     (środki kropek), nie z geografii. Każde halo startuje z
                     lekkim opóźnieniem → efekt fali. */}
                 {[
-                  { iso2: "CA", x: 17, y: 17 },
-                  { iso2: "KR", x: 37, y: 21 },
-                  { iso2: "PL", x: 66, y: 58 },
-                  { iso2: "DE", x: 61, y: 61 },
-                  { iso2: "UA", x: 75, y: 65 },
-                  { iso2: "RO", x: 73, y: 72 },
-                  { iso2: "IT", x: 60, y: 76 },
-                  { iso2: "BG", x: 73, y: 77 },
-                  { iso2: "XK", x: 69, y: 78 },
-                  { iso2: "PT", x: 43, y: 83 },
+                  { iso2: "CA", x: 18, y: 15 },
+                  { iso2: "KR", x: 38, y: 19 },
+                  { iso2: "PL", x: 67, y: 56 },
+                  { iso2: "DE", x: 62, y: 59 },
+                  { iso2: "UA", x: 75, y: 63 },
+                  { iso2: "RO", x: 73, y: 70 },
+                  { iso2: "IT", x: 61, y: 73 },
+                  { iso2: "BG", x: 73, y: 75 },
+                  { iso2: "XK", x: 69, y: 76 },
+                  { iso2: "PT", x: 44, y: 81 },
                 ].map((pin, i) => (
                   <div
                     key={pin.iso2}
@@ -135,36 +135,6 @@ export default function TrustedBy() {
                       }}
                     />
                     <span className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tp-red/50" />
-                  </div>
-                ))}
-
-                {/* Pinezki z flagami — 10 nazwanych krajów. Outer = pozycja na
-                    mapie + centrowanie (CSS); inner [data-map-pin] = animowany
-                    wjazd GSAP (osobny element, żeby GSAP nie nadpisał centrowania). */}
-                {COUNTRIES.filter((c) => c.mapPos).map((country) => (
-                  <div
-                    key={country.iso2}
-                    className="absolute -translate-x-1/2 -translate-y-full"
-                    style={{
-                      left: `${country.mapPos!.x}%`,
-                      top: `${country.mapPos!.y}%`,
-                    }}
-                  >
-                    <div data-map-pin className="group relative">
-                      {/* szpic — trójkąt CSS wskazujący punkt na mapie */}
-                      <div
-                        aria-hidden
-                        className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 border-x-[6px] border-t-[8px] border-x-transparent border-t-tp-red"
-                      />
-                      {/* główka z flagą */}
-                      <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-tp-red text-[14px] leading-none shadow-[0_0_12px_rgba(207,46,46,0.5),0_2px_6px_rgba(0,0,0,0.4)] ring-2 ring-white/90">
-                        {country.flag}
-                      </div>
-                      {/* tooltip z nazwą kraju (hover) */}
-                      <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-bg/90 px-2 py-1 text-xs text-ink opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                        {country.name}
-                      </div>
-                    </div>
                   </div>
                 ))}
               </div>
