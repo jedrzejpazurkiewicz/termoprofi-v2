@@ -105,6 +105,39 @@ export default function TrustedBy() {
                   className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-white/[0.06]"
                 />
 
+                {/* Halo overlays — pulsujące halo nad statycznymi pinezkami
+                    wpalonymi w PNG. Pozycje wykryte z mapa-dystrybucji.png
+                    (środki kropek), nie z geografii. Każde halo startuje z
+                    lekkim opóźnieniem → efekt fali. */}
+                {[
+                  { iso2: "CA", x: 17, y: 17 },
+                  { iso2: "KR", x: 37, y: 21 },
+                  { iso2: "PL", x: 66, y: 58 },
+                  { iso2: "DE", x: 61, y: 61 },
+                  { iso2: "UA", x: 75, y: 65 },
+                  { iso2: "RO", x: 73, y: 72 },
+                  { iso2: "IT", x: 60, y: 76 },
+                  { iso2: "BG", x: 73, y: 77 },
+                  { iso2: "XK", x: 69, y: 78 },
+                  { iso2: "PT", x: 43, y: 83 },
+                ].map((pin, i) => (
+                  <div
+                    key={pin.iso2}
+                    aria-hidden
+                    className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
+                    style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
+                  >
+                    <span
+                      className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tp-red/30 animate-ping"
+                      style={{
+                        animationDelay: `${i * 0.15}s`,
+                        animationDuration: "2.4s",
+                      }}
+                    />
+                    <span className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tp-red/50" />
+                  </div>
+                ))}
+
                 {/* Pinezki z flagami — 10 nazwanych krajów. Outer = pozycja na
                     mapie + centrowanie (CSS); inner [data-map-pin] = animowany
                     wjazd GSAP (osobny element, żeby GSAP nie nadpisał centrowania). */}
@@ -169,33 +202,18 @@ export default function TrustedBy() {
             delay={0.05}
             className="mt-10 grid grid-cols-1 gap-x-10 gap-y-0 sm:grid-cols-2"
           >
-            {COUNTRIES.map((country) => {
-              const muted = country.iso2 === "";
-              return (
-                <div
-                  key={country.iso2 || country.name}
-                  className="flex items-center gap-3 border-b border-hairline/70 py-3"
-                >
-                  <span
-                    aria-hidden
-                    className={
-                      "h-1.5 w-1.5 shrink-0 rounded-full " +
-                      (muted
-                        ? "bg-ink-2/40"
-                        : "bg-tp-red shadow-[0_0_10px_rgba(207,46,46,0.6)]")
-                    }
-                  />
-                  <span
-                    className={
-                      "text-sm " +
-                      (muted ? "italic text-ink-2/70" : "text-ink")
-                    }
-                  >
-                    {country.name}
-                  </span>
-                </div>
-              );
-            })}
+            {COUNTRIES.filter((c) => c.iso2 !== "").map((country) => (
+              <div
+                key={country.iso2}
+                className="flex items-center gap-3 border-b border-hairline/70 py-3"
+              >
+                <span
+                  aria-hidden
+                  className="h-1.5 w-1.5 shrink-0 rounded-full bg-tp-red shadow-[0_0_10px_rgba(207,46,46,0.6)]"
+                />
+                <span className="text-sm text-ink">{country.name}</span>
+              </div>
+            ))}
           </ScrollReveal>
 
           {/* one quiet stat line */}
