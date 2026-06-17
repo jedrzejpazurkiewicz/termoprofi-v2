@@ -128,13 +128,12 @@ export default function TrustedBy() {
                     style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
                   >
                     <span
-                      className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tp-red/30 animate-ping"
+                      className="absolute left-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tp-red/30 animate-ping"
                       style={{
                         animationDelay: `${i * 0.15}s`,
                         animationDuration: "2.4s",
                       }}
                     />
-                    <span className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tp-red/50" />
                   </div>
                 ))}
               </div>
