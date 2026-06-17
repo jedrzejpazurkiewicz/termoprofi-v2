@@ -75,7 +75,7 @@ export interface Hero {
 export const HERO: Hero = {
   title: "Nie widzisz jej. Czujesz codziennie",
   subtitle:
-    "Mały element w Twoim oknie, który ma wielki wpływ. Zmniejsza straty ciepła o 22%.",
+    "Niewielka rzecz, wielka oszczędność na długie lata.",
   cta: "Poznaj FIBERTHERM",
   ctaSecondary: "Umów rozmowę",
 };
