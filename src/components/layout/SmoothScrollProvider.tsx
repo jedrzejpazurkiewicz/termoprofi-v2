@@ -30,10 +30,20 @@ export default function SmoothScrollProvider({
 
     const reduced = prefersReducedMotion();
 
+    // Zawsze startuj od góry (Hero) — nie pozwól przeglądarce przywracać
+    // poprzedniej pozycji scrolla po F5 / nowej karcie.
+    if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0); // natywny fallback (gdyby Lenis jeszcze nie przejął)
+
     const lenis = new Lenis({
       duration: 1.1,
       smoothWheel: !reduced,
     });
+
+    // Natychmiast przewiń Lenis do góry (sync z window).
+    lenis.scrollTo(0, { immediate: true });
 
     // Expose the single Lenis instance so an isolated effect (the BridgeStat
     // scroll-lock) can snap scroll without re-creating Lenis. Removed on cleanup.
