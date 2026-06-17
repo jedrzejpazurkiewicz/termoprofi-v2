@@ -1,10 +1,12 @@
 "use client";
 
 import { useId, useState } from "react";
+import { Canvas } from "@react-three/fiber";
 import Section from "@/components/ui/Section";
 import Button from "@/components/ui/Button";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import ThermalCompare from "@/components/sections/ThermalCompare";
+import FiberthermModel from "@/components/sections/FiberthermModel";
 
 /**
  * Czym jest FIBERTHERM — the technology deep-dive.
@@ -97,17 +99,16 @@ export default function Fibertherm() {
               aria-hidden
               className="pointer-events-none absolute -inset-6 -z-10 rounded-[2rem] bg-radial-glow opacity-70 blur-2xl"
             />
-            <div className="overflow-hidden rounded-xl border border-hairline bg-black shadow-ambient">
+            <div className="overflow-hidden rounded-xl border border-hairline bg-white shadow-ambient">
               <div className="relative aspect-video w-full">
-                <video
-                  src="/videos/okno.mp4"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  aria-label="Przekrój pakietu szyby zespolonej — film poglądowy FIBERTHERM"
-                  className="absolute inset-0 h-full w-full object-contain"
-                />
+                <Canvas
+                  camera={{ position: [0, 0, 6], fov: 30 }}
+                  dpr={[1, 2]}
+                  gl={{ antialias: true, alpha: true }}
+                  aria-label="Model 3D przekroju szyby zespolonej FIBERTHERM — przeciągnij, aby obrócić"
+                >
+                  <FiberthermModel />
+                </Canvas>
                 {/* depth: hairline top sheen + bottom vignette */}
                 <div
                   aria-hidden
@@ -115,7 +116,7 @@ export default function Fibertherm() {
                 />
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_0%,transparent_60%,rgba(11,15,20,0.5)_100%)]"
+                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_0%,transparent_60%,rgba(0,0,0,0.15)_100%)]"
                 />
               </div>
             </div>
@@ -127,7 +128,7 @@ export default function Fibertherm() {
               <span className="text-pretty">
                 Przekrój pakietu szyby zespolonej. Ciepła ramka FIBERTHERM
                 oddziela tafle na krawędzi — w miejscu, gdzie tradycyjnie
-                powstaje mostek termiczny.
+                powstaje mostek termiczny. Przeciągnij, aby obrócić model.
               </span>
             </figcaption>
           </figure>
