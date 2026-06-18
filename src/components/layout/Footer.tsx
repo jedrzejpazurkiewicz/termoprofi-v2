@@ -8,7 +8,7 @@ export function Footer() {
   const year = 2026;
 
   return (
-    <footer className="relative z-10 border-t border-hairline bg-bg/60 backdrop-blur-sm">
+    <footer className="relative z-10 border-t border-hairline bg-bg">
       <div className="mx-auto w-full max-w-container px-6 py-16 sm:px-8 lg:px-10">
         <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
           {/* Brand + address */}
@@ -69,14 +69,23 @@ export function Footer() {
             <ul className="mt-4 space-y-2.5">
               {SITE.socials.map((social) => (
                 <li key={social.label}>
-                  <a
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-ink-2 transition-colors hover:text-ink"
-                  >
-                    {social.label}
-                  </a>
+                  {social.disabled ? (
+                    <span
+                      aria-disabled="true"
+                      className="cursor-not-allowed text-sm text-ink-2 opacity-50"
+                    >
+                      {social.label}
+                    </span>
+                  ) : (
+                    <a
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-ink-2 transition-colors hover:text-ink"
+                    >
+                      {social.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>

@@ -1,10 +1,16 @@
 "use client";
 
 import Image from "next/image";
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import Section from "@/components/ui/Section";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import { COUNTRIES } from "@/lib/constants";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 /**
  * TrustedBy — "Zaufali nam".
@@ -28,8 +34,46 @@ const NAMED_COUNTRIES = COUNTRIES.filter((c) => c.iso2 !== "");
 const MARKET_COUNT = NAMED_COUNTRIES.length;
 
 export default function TrustedBy() {
+  const mapRef = useRef<HTMLDivElement>(null);
+
+  // Flag pins "hammer in" — drop from above with a bounce, staggered, once the
+  // map scrolls into view. Reduced-motion shows them in place. The pins live on
+  // an inner [data-map-pin] element so GSAP owns its transform without fighting
+  // the CSS centering transform on the positioning wrapper.
+  useGSAP(
+    () => {
+      const reduce = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      const pins =
+        mapRef.current?.querySelectorAll<HTMLElement>("[data-map-pin]");
+      if (!pins || pins.length === 0) return;
+
+      if (reduce) {
+        gsap.set(pins, { opacity: 1, yPercent: 0 });
+        return;
+      }
+
+      gsap.set(pins, { opacity: 0, yPercent: -200 });
+
+      gsap.to(pins, {
+        opacity: 1,
+        yPercent: 0,
+        duration: 0.7,
+        ease: "back.out(1.6)",
+        stagger: 0.12,
+        scrollTrigger: {
+          trigger: mapRef.current,
+          start: "top 75%",
+          toggleActions: "play none none none",
+        },
+      });
+    },
+    { scope: mapRef },
+  );
+
   return (
-    <Section id="zaufali" variant="dark">
+    <Section id="zaufali" className="bg-zinc-600">
       <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
         {/* LEFT — distribution map */}
         <ScrollReveal y={28}>
@@ -45,7 +89,7 @@ export default function TrustedBy() {
                 aria-hidden
                 className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
               />
-              <div className="relative overflow-hidden rounded-xl">
+              <div ref={mapRef} className="relative overflow-hidden rounded-xl">
                 <Image
                   src="/images/mapa-dystrybucji.png"
                   alt="Mapa dystrybucji ciepłych ramek FIBERTHERM — Europa, Ameryka Północna i Azja"
@@ -60,6 +104,38 @@ export default function TrustedBy() {
                   aria-hidden
                   className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-white/[0.06]"
                 />
+
+                {/* Halo overlays — pulsujące halo nad statycznymi pinezkami
+                    wpalonymi w PNG. Pozycje wykryte z mapa-dystrybucji.png
+                    (środki kropek), nie z geografii. Każde halo startuje z
+                    lekkim opóźnieniem → efekt fali. */}
+                {[
+                  { iso2: "CA", x: 18, y: 15 },
+                  { iso2: "KR", x: 38, y: 19 },
+                  { iso2: "PL", x: 67, y: 56 },
+                  { iso2: "DE", x: 62, y: 59 },
+                  { iso2: "UA", x: 75, y: 63 },
+                  { iso2: "RO", x: 73, y: 70 },
+                  { iso2: "IT", x: 61, y: 73 },
+                  { iso2: "BG", x: 73, y: 75 },
+                  { iso2: "XK", x: 69, y: 76 },
+                  { iso2: "PT", x: 44, y: 81 },
+                ].map((pin, i) => (
+                  <div
+                    key={pin.iso2}
+                    aria-hidden
+                    className="pointer-events-none absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2"
+                    style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
+                  >
+                    <span
+                      className="absolute inset-0 rounded-full bg-tp-red/30 animate-ping"
+                      style={{
+                        animationDelay: `${i * 0.15}s`,
+                        animationDuration: "2.4s",
+                      }}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </figure>
@@ -95,33 +171,18 @@ export default function TrustedBy() {
             delay={0.05}
             className="mt-10 grid grid-cols-1 gap-x-10 gap-y-0 sm:grid-cols-2"
           >
-            {COUNTRIES.map((country) => {
-              const muted = country.iso2 === "";
-              return (
-                <div
-                  key={country.iso2 || country.name}
-                  className="flex items-center gap-3 border-b border-hairline/70 py-3"
-                >
-                  <span
-                    aria-hidden
-                    className={
-                      "h-1.5 w-1.5 shrink-0 rounded-full " +
-                      (muted
-                        ? "bg-ink-2/40"
-                        : "bg-tp-red shadow-[0_0_10px_rgba(207,46,46,0.6)]")
-                    }
-                  />
-                  <span
-                    className={
-                      "text-sm " +
-                      (muted ? "italic text-ink-2/70" : "text-ink")
-                    }
-                  >
-                    {country.name}
-                  </span>
-                </div>
-              );
-            })}
+            {COUNTRIES.filter((c) => c.iso2 !== "").map((country) => (
+              <div
+                key={country.iso2}
+                className="flex items-center gap-3 border-b border-hairline/70 py-3"
+              >
+                <span
+                  aria-hidden
+                  className="h-1.5 w-1.5 shrink-0 rounded-full bg-tp-red shadow-[0_0_10px_rgba(207,46,46,0.6)]"
+                />
+                <span className="text-sm text-ink">{country.name}</span>
+              </div>
+            ))}
           </ScrollReveal>
 
           {/* one quiet stat line */}

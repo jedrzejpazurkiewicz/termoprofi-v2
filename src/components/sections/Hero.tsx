@@ -25,10 +25,16 @@ export default function Hero() {
         muted
         loop
         playsInline
-        preload="auto"
+        preload="metadata"
         poster="/videos/hero-loop.jpg"
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
         aria-hidden
+        onError={(e) => {
+          // If the video source fails, keep the poster visible by leaving the
+          // <video> element painted with its poster (it still renders the
+          // poster frame on error). Nothing else needed — just swallow the error.
+          e.currentTarget.style.objectFit = "cover";
+        }}
       >
         <source src="/videos/hero-loop.mp4" type="video/mp4" />
       </video>
@@ -49,7 +55,7 @@ export default function Hero() {
           </span>
 
           <h1 className="text-balance font-jost font-bold text-ink">
-            <span className="block text-[clamp(2rem,4vw,3rem)] font-medium leading-[1.15]">
+            <span className="block text-[clamp(2rem,4vw,3rem)] font-medium leading-[1.15] text-ink/75">
               Nie widzisz jej.
             </span>
             <span className="block text-[clamp(2rem,4vw,3rem)] font-medium leading-[1.15] mt-2">
@@ -64,8 +70,15 @@ export default function Hero() {
             {HERO.subtitle}
           </p>
 
-          <div className="mt-10">
+          <div className="mt-10 flex flex-wrap items-center gap-3">
             <Button href="#odkrycie">{HERO.cta}</Button>
+            <a
+              href="#kontakt"
+              className="inline-flex items-center gap-2 rounded-full border border-ink/30 bg-white/5 px-6 py-3 font-inter font-semibold text-sm text-ink transition-all duration-200 hover:border-tp-red hover:bg-tp-red hover:text-white"
+            >
+              {HERO.ctaSecondary}
+              <span aria-hidden>→</span>
+            </a>
           </div>
         </div>
       </div>

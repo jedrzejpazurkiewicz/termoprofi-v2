@@ -51,9 +51,9 @@ export function TextReveal({
         { yPercent: 115 },
         {
           yPercent: 0,
-          duration: 1,
+          duration: 0.9,
           delay,
-          ease: "power4.out",
+          ease: "power2.out",
           stagger,
           scrollTrigger: {
             trigger: el,

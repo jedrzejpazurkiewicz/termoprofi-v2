@@ -14,6 +14,11 @@ export const scroll = {
   progress: 0,
   /** Per-beat local progress, keyed by beat number, 0..1. */
   beats: {} as Record<number, number>,
+  /** True while the Discovery section intersects the viewport. A reliable
+   *  IntersectionObserver-driven signal that the 3D unit MUST be visible —
+   *  independent of GSAP/ScrollTrigger/pin refresh timing, so the model can
+   *  never silently stay at scale 0 when the user is looking at Discovery. */
+  discoveryInView: false,
 };
 
 /** Store the local progress for a given beat anchor. */

@@ -19,6 +19,7 @@
  * never snap a raw scrub value onto a transform.
  */
 import { useThree, useFrame } from "@react-three/fiber";
+import { useRef } from "react";
 import * as easing from "maath/easing";
 import * as THREE from "three";
 import { scroll, getBeat, clamp01 } from "@/lib/scroll-store";
@@ -33,6 +34,12 @@ const CAM_BASE = new THREE.Vector3(4.5, 1.5, 5);
 
 export default function SceneController() {
   const { camera } = useThree();
+  // Bulletproof "Discovery in view" detection: read the section's LIVE DOM
+  // position (throttled ~10x/s), independent of scroll events / Lenis /
+  // ScrollTrigger / IntersectionObserver timing — so the unit can never stay
+  // invisible after a reload or a jump straight into the section.
+  const tick = useRef(0);
+  const discoveryEl = useRef<HTMLElement | null>(null);
 
   useFrame((_state, dt) => {
     // Guard a stable dt — first frame or a stalled tab can hand us a huge delta.
@@ -43,11 +50,25 @@ export default function SceneController() {
     const b2 = getBeat(2); // rotate
     const b3 = getBeat(3); // heat climax
 
+    // Refresh the reliable visibility flag from the live DOM rect. This is the
+    // single source of truth for "the unit must be visible" and works on a cold
+    // reload / jump into Discovery, when scroll.progress is still 0.
+    if (++tick.current % 6 === 0 || !discoveryEl.current) {
+      if (!discoveryEl.current) {
+        discoveryEl.current = document.getElementById("odkrycie");
+      }
+      const el = discoveryEl.current;
+      if (el) {
+        const r = el.getBoundingClientRect();
+        scroll.discoveryInView = r.top < window.innerHeight && r.bottom > 0;
+      }
+    }
+
     // ---- Camera: calm push-in + slight orbit driven by global progress. ----
     // Push in along the dolly axis and swing the azimuth a touch; keep it
     // subtle — "magnetyczny spokój", not a flythrough.
-    const orbit = p * 0.6; // radians of azimuth across the whole page
-    const push = p * 1.7; // how far we dolly toward the unit
+    const orbit = p * 0.5; // azimuth swing across the spine
+    const push = p * 1.4; // dolly toward the unit (kept moderate so it stays framed)
     const radius = CAM_BASE.length() - push;
     const baseAzimuth = Math.atan2(CAM_BASE.x, CAM_BASE.z);
     const az = baseAzimuth - orbit;
@@ -62,7 +83,8 @@ export default function SceneController() {
     camera.lookAt(lookTarget);
 
     // ---- GlassUnit: emerge (beat 1), rotate (beat 2), heat (beats 1→3). ----
-    const { group, spacer, glass, heatLight, uHeat } = sceneRefs;
+    const { group, spacer, glass, heatLight, uHeat, panes, paneCenterX } =
+      sceneRefs;
 
     // EMERGE: panes part along X, spacer lifts up and toward the viewer so it
     // reads as "pulled out" of the assembly.
@@ -87,11 +109,36 @@ export default function SceneController() {
       );
     }
 
+    // EXPLODE (real GLB): once the unit has scaled in, slide the glass panes
+    // apart from their centroid to reveal the FIBERTHERM ramka ("rozbierz
+    // okno"). Delayed vs the appear so it reads as emerge → then disassemble.
+    if (panes.length) {
+      const exp = clamp01((b1 - 0.25) / 0.75);
+      const spread = 0.6; // gentle separation — keep the unit reading as ONE package
+      for (let i = 0; i < panes.length; i++) {
+        const pane = panes[i];
+        const targetX =
+          paneCenterX + (pane.baseX - paneCenterX) * (1 + exp * spread);
+        easing.damp(pane.obj.position, "x", targetX, 0.4, delta);
+      }
+    }
+
     // ROTATE: present the profile. Beat 2 turns the whole unit; we add a hair
     // of the global progress so it keeps drifting calmly throughout.
     if (group) {
-      const targetY = b2 * Math.PI * 0.6 + p * 0.25;
+      const targetY = b2 * Math.PI * 0.35 + p * 0.08;
       easing.dampE(group.rotation, [group.rotation.x, targetY, 0], 0.5, delta);
+    }
+
+    // APPEAR: the unit is visible ONLY while the Discovery section is on screen,
+    // so it never leaks into Hero / BridgeStat / EdgeApproach above it. We gate on
+    // `discoveryInView`, which is recomputed every few frames from the section's
+    // LIVE DOM rect (bulletproof — independent of ScrollTrigger / Lenis / progress
+    // timing). That robust signal + the eased damp give a smooth fade in/out
+    // without the flicker that the old progress-based gating caused.
+    if (group) {
+      const appear = scroll.discoveryInView ? 1 : 0;
+      easing.damp3(group.scale, [appear, appear, appear], 0.3, delta);
     }
 
     // HEAT: ramp 0.3 → 1.0 as the reveal progresses. Weight it toward the

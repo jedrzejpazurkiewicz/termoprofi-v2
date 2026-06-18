@@ -1,10 +1,12 @@
 "use client";
 
 import { useId, useState } from "react";
-import Image from "next/image";
+import { Canvas } from "@react-three/fiber";
 import Section from "@/components/ui/Section";
 import Button from "@/components/ui/Button";
 import ScrollReveal from "@/components/animations/ScrollReveal";
+import ThermalCompare from "@/components/sections/ThermalCompare";
+import FiberthermModel from "@/components/sections/FiberthermModel";
 
 /**
  * Czym jest FIBERTHERM — the technology deep-dive.
@@ -60,12 +62,12 @@ export default function Fibertherm() {
   const panelId = useId();
 
   return (
-    <Section id="fibertherm" eyebrow="Technologia FIBERTHERM">
+    <Section id="fibertherm" eyebrow="Technologia FIBERTHERM" className="bg-white">
       {/* ---------- TOP: pitch + cross-section ---------- */}
       <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
         <ScrollReveal>
           <div>
-            <h2 className="text-balance font-jost text-display-sm font-bold text-ink">
+            <h2 className="text-balance font-jost text-display-sm font-bold text-black">
               Materiał, który zmienia regułę.
             </h2>
             <div className="mt-7 max-w-prose space-y-5 text-pretty text-lg leading-relaxed text-ink-2">
@@ -97,15 +99,16 @@ export default function Fibertherm() {
               aria-hidden
               className="pointer-events-none absolute -inset-6 -z-10 rounded-[2rem] bg-radial-glow opacity-70 blur-2xl"
             />
-            <div className="overflow-hidden rounded-2xl border border-hairline bg-surface/40 shadow-ambient">
-              <div className="relative aspect-[1562/1072] w-full">
-                <Image
-                  src="/images/gabriel-3d-przekroj.png"
-                  alt="Przekrój szyby zespolonej z ciepłą ramką dystansową FIBERTHERM na krawędzi pakietu"
-                  fill
-                  sizes="(min-width: 1024px) 52vw, 100vw"
-                  className="object-contain"
-                />
+            <div className="overflow-hidden rounded-xl border border-hairline bg-white shadow-ambient">
+              <div className="relative aspect-video w-full">
+                <Canvas
+                  camera={{ position: [0, 0, 6], fov: 30 }}
+                  dpr={[1, 2]}
+                  gl={{ antialias: true, alpha: true }}
+                  aria-label="Model 3D przekroju szyby zespolonej FIBERTHERM — przeciągnij, aby obrócić"
+                >
+                  <FiberthermModel />
+                </Canvas>
                 {/* depth: hairline top sheen + bottom vignette */}
                 <div
                   aria-hidden
@@ -113,7 +116,7 @@ export default function Fibertherm() {
                 />
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_0%,transparent_60%,rgba(11,15,20,0.5)_100%)]"
+                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_0%,transparent_60%,rgba(0,0,0,0.15)_100%)]"
                 />
               </div>
             </div>
@@ -125,12 +128,17 @@ export default function Fibertherm() {
               <span className="text-pretty">
                 Przekrój pakietu szyby zespolonej. Ciepła ramka FIBERTHERM
                 oddziela tafle na krawędzi — w miejscu, gdzie tradycyjnie
-                powstaje mostek termiczny.
+                powstaje mostek termiczny. Przeciągnij, aby obrócić model.
               </span>
             </figcaption>
           </figure>
         </ScrollReveal>
       </div>
+
+      {/* ---------- COMPARE: static 50/50 thermal split (standard vs FIBERTHERM) ---------- */}
+      <ScrollReveal delay={0.04} y={32} className="mt-16 lg:mt-20">
+        <ThermalCompare />
+      </ScrollReveal>
 
       {/* ---------- EXPANDABLE: technical specification ---------- */}
       <ScrollReveal delay={0.04} className="mt-16 lg:mt-20">

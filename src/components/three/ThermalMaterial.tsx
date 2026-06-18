@@ -108,7 +108,7 @@ export function useThermalMaterial(): UseThermalMaterial {
            // (low vCore). Present from the first frame so the metal isn't dead,
            // but kept subtle so it never washes the whole bar blue.
            float rim = (1.0 - vCore);
-           vec3 coldGlow = coolBlue * rim * 0.12;
+           vec3 coldGlow = coolBlue * rim * 0.19;
 
            // Warm filament: confined to the core (vCore high) AND scaled by how
            // hot we are, so at rest the bar is graphite + a hint of blue, and at

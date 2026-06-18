@@ -191,7 +191,7 @@ export function UseCases() {
               onClick={() => setActive(filter)}
               aria-pressed={isActive}
               className={[
-                "rounded-pill border px-4 py-2 text-sm font-medium transition-all duration-300 ease-calm",
+                "rounded-pill border px-4 py-2 text-sm font-medium transition-all duration-300 ease-calm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tp-red/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                 isActive
                   ? "border-tp-red/50 bg-tp-red/15 text-ink shadow-[0_0_0_1px_rgba(207,46,46,0.25)]"
                   : "border-hairline text-ink-2 hover:border-tp-red/30 hover:text-ink",

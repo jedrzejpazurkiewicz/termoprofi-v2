@@ -10,6 +10,8 @@
 export interface SocialLink {
   label: string;
   href: string;
+  /** When true, the link is a placeholder (no real account yet) and should render non-interactive. */
+  disabled?: boolean;
 }
 
 export interface SiteInfo {
@@ -35,10 +37,10 @@ export const SITE: SiteInfo = {
   phoneHref: "tel:+48818546226",
   email: "info@termoprofi.com",
   socials: [
-    { label: "Facebook", href: "https://www.facebook.com/" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/" },
-    { label: "Instagram", href: "https://www.instagram.com/" },
-    { label: "YouTube", href: "https://www.youtube.com/" },
+    { label: "Facebook", href: "https://www.facebook.com/", disabled: true },
+    { label: "LinkedIn", href: "https://www.linkedin.com/", disabled: true },
+    { label: "Instagram", href: "https://www.instagram.com/", disabled: true },
+    { label: "YouTube", href: "https://www.youtube.com/", disabled: true },
   ],
 };
 
@@ -53,7 +55,7 @@ export interface NavLink {
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Produkty", href: "#produkty" },
-  { label: "Zastosowania", href: "#zastosowania" },
+  // "Zastosowania" / Realizacje — przeniesione na osobną zakładkę; przywrócić jako route, gdy powstanie.
   { label: "Zaufali nam", href: "#zaufali-nam" },
   { label: "O nas", href: "#o-nas" },
   { label: "Kontakt", href: "#kontakt" },
@@ -67,13 +69,15 @@ export interface Hero {
   title: string;
   subtitle: string;
   cta: string;
+  ctaSecondary: string;
 }
 
 export const HERO: Hero = {
   title: "Nie widzisz jej. Czujesz codziennie",
   subtitle:
-    "Mały element w Twoim oknie, który ma wielki wpływ. Zmniejsza straty ciepła o 22%.",
+    "Niewielka rzecz, wielka oszczędność na długie lata.",
   cta: "Poznaj FIBERTHERM",
+  ctaSecondary: "Umów rozmowę",
 };
 
 /* -------------------------------------------------------------------------- */
@@ -84,12 +88,30 @@ export interface Stat {
   value: number;
   suffix: string;
   label: string;
+  /** Decimal places for the count-up (e.g. 2 → "7,69"). Defaults to 0. */
+  decimals?: number;
 }
 
 export const STATS: Stat[] = [
-  { value: 22, suffix: "%", label: "mniej strat energii" },
-  { value: 70, suffix: "%", label: "mniej kondensacji" },
-  { value: 30, suffix: " lat", label: "żywotności (EN 1279)" },
+  {
+    value: 7.69,
+    suffix: "%",
+    decimals: 2,
+    label:
+      "Większa wysokość profili TermoProfi w porównaniu do produktów konkurencyjnych zapewnia wyższą sztywność konstrukcji oraz mniejsze ugięcia.",
+  },
+  {
+    value: 22,
+    suffix: "%",
+    label:
+      "Z ramkami dystansowymi TermoProfi straty energii cieplnej przez okno są nawet o 22% niższe w porównaniu do tradycyjnych ramek aluminiowych.",
+  },
+  {
+    value: 70,
+    suffix: "%",
+    label:
+      "Prawdopodobieństwo wystąpienia kondensacji pary wodnej na szybie jest o 70% mniejsze niż dla szyb z ramką aluminiową.",
+  },
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -116,19 +138,21 @@ export interface Country {
   name: string;
   flag: string;
   iso2: string;
+  /** Pozycja na mapie w procentach (0-100, od lewej do prawej / od góry do dołu). */
+  mapPos?: { x: number; y: number };
 }
 
 export const COUNTRIES: Country[] = [
-  { name: "Polska", flag: "🇵🇱", iso2: "PL" },
-  { name: "Włochy", flag: "🇮🇹", iso2: "IT" },
-  { name: "Ukraina", flag: "🇺🇦", iso2: "UA" },
-  { name: "Bułgaria", flag: "🇧🇬", iso2: "BG" },
-  { name: "Portugalia", flag: "🇵🇹", iso2: "PT" },
-  { name: "Kanada", flag: "🇨🇦", iso2: "CA" },
-  { name: "Korea Południowa", flag: "🇰🇷", iso2: "KR" },
-  { name: "Rumunia", flag: "🇷🇴", iso2: "RO" },
-  { name: "Kosowo", flag: "🇽🇰", iso2: "XK" },
-  { name: "Niemcy", flag: "🇩🇪", iso2: "DE" },
+  { name: "Polska", flag: "🇵🇱", iso2: "PL", mapPos: { x: 53, y: 32 } },
+  { name: "Włochy", flag: "🇮🇹", iso2: "IT", mapPos: { x: 50, y: 42 } },
+  { name: "Ukraina", flag: "🇺🇦", iso2: "UA", mapPos: { x: 56, y: 34 } },
+  { name: "Bułgaria", flag: "🇧🇬", iso2: "BG", mapPos: { x: 54, y: 41 } },
+  { name: "Portugalia", flag: "🇵🇹", iso2: "PT", mapPos: { x: 42, y: 45 } },
+  { name: "Kanada", flag: "🇨🇦", iso2: "CA", mapPos: { x: 16, y: 26 } },
+  { name: "Korea Południowa", flag: "🇰🇷", iso2: "KR", mapPos: { x: 78, y: 46 } },
+  { name: "Rumunia", flag: "🇷🇴", iso2: "RO", mapPos: { x: 54, y: 39 } },
+  { name: "Kosowo", flag: "🇽🇰", iso2: "XK", mapPos: { x: 53, y: 42 } },
+  { name: "Niemcy", flag: "🇩🇪", iso2: "DE", mapPos: { x: 50, y: 33 } },
   { name: "i wiele innych", flag: "🌍", iso2: "" },
 ];
 
@@ -147,38 +171,28 @@ export interface Product {
 export const PRODUCTS: Product[] = [
   {
     id: "ramki-dystansowe",
-    name: "Ramki dystansowe",
+    name: "Ramki dystansowe i akcesoria",
     tagline: "Serce ciepłej krawędzi",
     description:
-      "Profil FIBERTHERM z kompozytu wzmacnianego włóknem szklanym oddziela szyby zespolone, niemal całkowicie eliminując mostek termiczny na krawędzi pakietu. Cieplej przy ramie, mniej kondensacji, wyższa klasa energetyczna okna.",
+      "Profil FIBERTHERM z kompozytu wzmacnianego włóknem szklanym oddziela szyby zespolone, niemal całkowicie eliminując mostek termiczny na krawędzi pakietu. W komplecie łączniki, narożniki i korki, które dopinają cały pakiet.",
     features: [
       "Przewodność λ na poziomie 0,3 W/(m·K)",
       "Zgodność z normą EN 1279",
       "Dostępne w szerokim zakresie szerokości i kolorów",
+      "Łączniki, narożniki i korki dopasowane do profili",
     ],
   },
   {
     id: "szprosy",
-    name: "Szprosy",
+    name: "Szprosy i akcesoria",
     tagline: "Detal, który definiuje styl",
     description:
-      "Szprosy wewnątrzszybowe i konstrukcyjne, które dzielą taflę bez utraty szczelności i estetyki pakietu. Precyzyjne łączenia, równe podziały i powtarzalna jakość w każdej serii.",
+      "Szprosy wewnątrzszybowe i konstrukcyjne, które dzielą taflę bez utraty szczelności i estetyki pakietu. Wraz z kompletem komponentów montażowych, które przyspieszają i porządkują produkcję.",
     features: [
       "Bogata paleta profili i kolorów",
       "Idealne podziały dla okien stylowych i historyzujących",
       "Trwałe, odporne na warunki we wnętrzu pakietu",
-    ],
-  },
-  {
-    id: "akcesoria",
-    name: "Akcesoria",
-    tagline: "Wszystko, co spina pakiet",
-    description:
-      "Łączniki, narożniki, korki i komponenty montażowe dopracowane tak, by produkcja szyby zespolonej była szybka, czysta i powtarzalna. Kompletny system, który po prostu pasuje.",
-    features: [
-      "Łączniki proste i narożne dopasowane do profili",
-      "Komponenty wspierające automatyzację produkcji",
-      "Pełna kompatybilność z ramkami TermoProfi",
+      "Komponenty montażowe wspierające automatyzację produkcji",
     ],
   },
 ];

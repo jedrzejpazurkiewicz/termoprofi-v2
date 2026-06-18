@@ -52,10 +52,10 @@ export function ScrollReveal({
         {
           opacity: 1,
           y: 0,
-          duration: 0.9,
+          duration: 0.8,
           delay,
-          ease: "power3.out",
-          stagger: stagger ? 0.09 : 0,
+          ease: "power2.out",
+          stagger: stagger ? 0.14 : 0,
           scrollTrigger: {
             trigger: el,
             start: "top 85%",

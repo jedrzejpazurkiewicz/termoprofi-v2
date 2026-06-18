@@ -1,8 +1,9 @@
 "use client";
 
 import { useScroll, useTransform, useReducedMotion, motion } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import BeatAnchor from "@/components/animations/BeatAnchor";
+import { scroll } from "@/lib/scroll-store";
 
 /**
  * Discovery — the reveal stage. Tall (~220vh) so the scroll-driven 3D
@@ -33,12 +34,33 @@ export default function Discovery() {
   );
   const copyY = useTransform(scrollYProgress, [0.08, 0.4], [40, 0]);
   const accentWidth = useTransform(scrollYProgress, [0.2, 0.6], ["0%", "100%"]);
+  // Film wjeżdża z góry i pojawia się w miarę scrolla przez sekcję (paralaksa).
+  const videoY = useTransform(scrollYProgress, [0.1, 0.6], [-150, 0]);
+  const videoOpacity = useTransform(scrollYProgress, [0.1, 0.4], [0, 1]);
+
+  // Reliable "Discovery is on screen" signal for the 3D layer — drives the
+  // unit's visibility independent of GSAP/ScrollTrigger/pin refresh quirks.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        scroll.discoveryInView = entry.isIntersecting;
+      },
+      { threshold: 0 },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      scroll.discoveryInView = false;
+    };
+  }, []);
 
   return (
     <section
       id="odkrycie"
       ref={ref}
-      className="relative h-[220vh]"
+      className="relative h-[220vh] bg-white/[0.92]"
       aria-label="Odkrycie: czym jest FIBERTHERM"
     >
       {/* Beat 1 — emerge band (upper half). */}
@@ -47,27 +69,46 @@ export default function Discovery() {
       <BeatAnchor beat={2} className="pointer-events-none absolute inset-x-0 top-1/2 h-1/2" />
 
       {/* Pinned narrative — sits in front of the canvas, centred in the viewport. */}
-      <div className="sticky top-0 flex h-[100svh] items-center justify-center">
-        <motion.div
-          className="mx-auto max-w-2xl px-6 text-center"
-          style={reduceMotion ? undefined : { opacity: copyOpacity, y: copyY }}
-        >
-          <p className="text-balance font-jost text-display-sm font-bold text-ink">
-            Widzisz tę małą ramkę?
-          </p>
-          <p className="mt-3 text-balance font-jost text-display-sm font-bold text-tp-red">
-            To jest FIBERTHERM.
-          </p>
-          <motion.span
-            aria-hidden
-            className="mx-auto mt-8 block h-px max-w-xs bg-gradient-to-r from-transparent via-tp-red/70 to-transparent"
-            style={reduceMotion ? undefined : { width: accentWidth }}
-          />
-          <p className="mt-8 text-pretty text-base leading-relaxed text-ink-2">
-            Ramka dystansowa rozdziela szyby w pakiecie. To właśnie tędy — jej
-            krawędzią — ucieka najwięcej ciepła z całego okna.
-          </p>
-        </motion.div>
+      <div className="sticky top-0 flex h-[100svh] items-center justify-start">
+        <div className="grid w-full grid-cols-1 items-center gap-6 px-8 md:grid-cols-[2fr_3fr] md:gap-12 md:pl-16 md:pr-12">
+          {/* LEFT — tekst narracyjny */}
+          <motion.div
+            className="max-w-lg text-left"
+            style={reduceMotion ? undefined : { opacity: copyOpacity, y: copyY }}
+          >
+            <p className="text-balance font-jost text-display-sm font-bold text-[#14171c]">
+              Widzisz tę małą ramkę?
+            </p>
+            <p className="mt-3 text-balance font-jost text-display-sm font-bold text-tp-red">
+              To jest FIBERTHERM.
+            </p>
+            <motion.span
+              aria-hidden
+              className="mt-8 block h-px max-w-xs bg-gradient-to-r from-tp-red/70 to-transparent"
+              style={reduceMotion ? undefined : { width: accentWidth }}
+            />
+            <p className="mt-8 max-w-md text-pretty text-base leading-relaxed text-[#3b424e]">
+              Ramka dystansowa rozdziela szyby w pakiecie. To właśnie tędy — jej
+              krawędzią — ucieka najwięcej ciepła z całego okna.
+            </p>
+          </motion.div>
+
+          {/* RIGHT — film z przekrojem okna */}
+          <motion.div
+            className="relative aspect-video w-full overflow-hidden rounded-2xl"
+            style={reduceMotion ? undefined : { y: videoY, opacity: videoOpacity }}
+          >
+            <video
+              src="/videos/okno.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-label="Przekrój pakietu szyby zespolonej — film poglądowy FIBERTHERM"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </motion.div>
+        </div>
       </div>
     </section>
   );

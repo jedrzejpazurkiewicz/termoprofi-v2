@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { resend } from "@/lib/resend";
+import { getResend } from "@/lib/resend";
 
 export const runtime = "nodejs";
 
@@ -150,6 +150,19 @@ export async function POST(req: Request) {
     purpose: data.purpose,
     message: data.message,
   };
+
+  const resend = getResend();
+  if (!resend) {
+    console.error("[contact] RESEND_API_KEY missing — e-mail not configured");
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          "Wysyłka e-mail nie jest jeszcze skonfigurowana. Napisz na info@termoprofi.com.",
+      },
+      { status: 503 },
+    );
+  }
 
   try {
     const { error } = await resend.emails.send({
