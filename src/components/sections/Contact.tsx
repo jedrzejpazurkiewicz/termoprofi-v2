@@ -138,7 +138,7 @@ export function Contact() {
     <Section
       id="kontakt"
       eyebrow={CONTACT_COPY.eyebrow}
-      className="overflow-hidden border-t border-hairline bg-bg/60 backdrop-blur-sm"
+      className="overflow-hidden border-t border-hairline bg-zinc-700 backdrop-blur-sm"
     >
       {/* Atmosferyczny akcent tła */}
       <div

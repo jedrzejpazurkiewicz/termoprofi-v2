@@ -98,7 +98,7 @@ export default function Owner() {
   );
 
   return (
-    <Section id="o-nas" eyebrow="O nas" variant="dark">
+    <Section id="o-nas" eyebrow="O nas" className="bg-zinc-600">
       {/* Faint editorial backdrop — keeps the dark slab from going flat. */}
       <div
         aria-hidden

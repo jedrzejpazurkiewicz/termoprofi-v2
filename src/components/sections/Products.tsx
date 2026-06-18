@@ -35,7 +35,7 @@ const PRODUCT_IMAGES: Record<string, { src: string; alt: string }> = {
 
 export default function Products() {
   return (
-    <Section id="produkty" eyebrow="Produkty" variant="dark">
+    <Section id="produkty" eyebrow="Produkty" className="bg-zinc-600">
       <div className="max-w-2xl">
         <h2 className="text-balance font-jost text-display-sm font-bold leading-[1.05] text-ink">
           Kompletny system ciepłej krawędzi.

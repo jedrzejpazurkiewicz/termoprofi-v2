@@ -140,9 +140,9 @@ export default function SelfCheck() {
   }
 
   return (
-    <Section id="autotest" eyebrow="Twoje okno">
+    <Section id="autotest" eyebrow="Twoje okno" className="bg-white">
       <ScrollReveal>
-        <div className="relative mx-auto max-w-3xl overflow-hidden rounded-2xl border border-hairline bg-surface/70 px-7 py-12 shadow-ambient backdrop-blur-md sm:px-12 sm:py-16">
+        <div className="relative mx-auto max-w-3xl overflow-hidden rounded-2xl border border-hairline bg-zinc-600 px-7 py-12 shadow-ambient backdrop-blur-md sm:px-12 sm:py-16">
           {/* top hairline sheen — depth over the dark page */}
           <div
             aria-hidden

@@ -73,7 +73,7 @@ export default function TrustedBy() {
   );
 
   return (
-    <Section id="zaufali" variant="dark">
+    <Section id="zaufali" className="bg-zinc-600">
       <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
         {/* LEFT — distribution map */}
         <ScrollReveal y={28}>

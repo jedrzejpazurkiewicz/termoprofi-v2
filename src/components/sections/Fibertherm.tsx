@@ -62,7 +62,7 @@ export default function Fibertherm() {
   const panelId = useId();
 
   return (
-    <Section id="fibertherm" eyebrow="Technologia FIBERTHERM">
+    <Section id="fibertherm" eyebrow="Technologia FIBERTHERM" className="bg-white">
       {/* ---------- TOP: pitch + cross-section ---------- */}
       <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
         <ScrollReveal>
