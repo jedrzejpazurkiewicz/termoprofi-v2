@@ -124,7 +124,7 @@ export default function ThermalCompare() {
             tone="cold"
             temp="10,8°C"
             sub="zimna krawędź zimą"
-            tip="Ramka aluminiowa — mostek termiczny na krawędzi pakietu."
+            tip="Mostek termiczny — tędy ucieka ciepło i pieniądze."
           />
         </div>
         <CompareSide
@@ -132,7 +132,7 @@ export default function ThermalCompare() {
           tone="warm"
           temp="+2,4°C"
           sub="cieplejsza krawędź"
-          tip="FIBERTHERM — kompozyt, λ = 0,3 W/(m·K)."
+          tip="Profil, krawędź, która trzyma ciepło w środku."
         />
       </div>
 

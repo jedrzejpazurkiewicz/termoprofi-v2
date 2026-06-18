@@ -58,12 +58,7 @@ export function Header() {
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
       <div className="mx-auto w-full max-w-container px-4 sm:px-6 lg:px-8">
         <div
-          className={[
-            "pointer-events-auto mt-3 flex items-center justify-between rounded-2xl px-4 py-2.5 transition-all duration-500 ease-calm sm:px-5",
-            scrolled
-              ? "glass border border-hairline shadow-ambient"
-              : "border border-transparent",
-          ].join(" ")}
+          className="pointer-events-auto mt-3 flex items-center justify-between rounded-2xl border border-hairline bg-black/40 px-4 py-2.5 shadow-ambient backdrop-blur-md transition-all duration-500 ease-calm sm:px-5"
         >
           {/* Wordmark */}
           <Link

@@ -104,7 +104,7 @@ export default function Fibertherm() {
               className="pointer-events-none absolute -inset-6 -z-10 rounded-[2rem] bg-radial-glow opacity-70 blur-2xl"
             />
             <div className="overflow-hidden rounded-xl border border-hairline bg-white shadow-ambient">
-              <div className="relative aspect-video w-full">
+              <div className="relative aspect-video w-full" data-lenis-prevent>
                 <Canvas
                   camera={{ position: [0, 0, 6], fov: 30 }}
                   dpr={[1, 2]}

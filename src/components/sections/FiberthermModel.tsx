@@ -57,10 +57,9 @@ function RealModel({ onReady }: { onReady: () => void }) {
   const model = useMemo(() => {
     const root = scene.clone(true);
 
-    // Inverted detection: in this GLB the frame geometry is named Sphere/Cube/
-    // folia/etc. (the "ramka" nodes are empty groups), so finding "ramka" missed
-    // everything. Instead we tag the GLASS panes (szyba*) and paint everything
-    // else brand-red — only the panes stay transparent.
+    // Tag the GLASS panes (szyba*) — they stay transparent. Everything else is
+    // the spacer "ramka": its body gets a vertical red→black gradient and the
+    // desiccant beads (Sphere*) go solid yellow.
     const szkloMeshes = new Set<Object3D>();
     root.traverse((o) => {
       if (!/szyba|szkło|szklo|glass|pane/i.test(o.name || "")) return;
@@ -69,33 +68,99 @@ function RealModel({ onReady }: { onReady: () => void }) {
       });
     });
 
+    root.updateWorldMatrix(true, true);
+
+    const TOP = new THREE.Color("#E62920"); // żywa czerwień u góry
+    const BOTTOM = new THREE.Color("#808085"); // szary u dołu
+    const DOT = new THREE.Color("#F2C200"); // żółte kropki (środek)
+    const v = new THREE.Vector3();
+    const c = new THREE.Color();
+
     root.traverse((o) => {
       const mesh = o as Mesh;
       if (!(mesh as { isMesh?: boolean }).isMesh || !mesh.material) return;
-      const isSzklo = szkloMeshes.has(mesh);
-      const remap = (m: Material) => {
+
+      // GLASS — keep transparent, lift reflections a touch.
+      if (szkloMeshes.has(mesh)) {
+        const bump = (m: Material) => {
+          const mm = m.clone() as THREE.MeshStandardMaterial;
+          if ("envMapIntensity" in mm)
+            mm.envMapIntensity = Math.max(mm.envMapIntensity ?? 1, 1.3);
+          mm.needsUpdate = true;
+          return mm;
+        };
+        mesh.material = Array.isArray(mesh.material)
+          ? mesh.material.map(bump)
+          : bump(mesh.material);
+        return;
+      }
+
+      // DOTS (desiccant beads) — solid yellow.
+      if (/sphere/i.test(mesh.name || "")) {
+        const paint = (m: Material) => {
+          const mm = m.clone() as THREE.MeshStandardMaterial;
+          if (mm.color) mm.color.copy(DOT);
+          mm.vertexColors = false;
+          mm.metalness = 0.1;
+          mm.roughness = 0.5;
+          mm.envMapIntensity = 0.4;
+          mm.needsUpdate = true;
+          return mm;
+        };
+        mesh.material = Array.isArray(mesh.material)
+          ? mesh.material.map(paint)
+          : paint(mesh.material);
+        return;
+      }
+
+      // SPACER BODY — vertical gradient PER MESH: vivid red at the top → grey at
+      // the bottom. Clone the geometry first so we never mutate the cached GLB
+      // shared with the Discovery GlassUnit.
+      const geom = (mesh.geometry as THREE.BufferGeometry).clone();
+      mesh.geometry = geom;
+      geom.computeBoundingBox();
+      const bb = geom.boundingBox!.clone().applyMatrix4(mesh.matrixWorld);
+      const mMinY = bb.min.y;
+      const mSpanY = Math.max(bb.max.y - bb.min.y, 1e-6);
+      const pos = geom.attributes.position;
+      const colors = new Float32Array(pos.count * 3);
+      for (let i = 0; i < pos.count; i++) {
+        v.set(pos.getX(i), pos.getY(i), pos.getZ(i)).applyMatrix4(
+          mesh.matrixWorld,
+        );
+        // Curve keeps red dominant up top; grey only toward the bottom.
+        const t = Math.pow(
+          THREE.MathUtils.clamp((v.y - mMinY) / mSpanY, 0, 1),
+          0.45,
+        );
+        c.copy(BOTTOM).lerp(TOP, t);
+        colors[i * 3] = c.r;
+        colors[i * 3 + 1] = c.g;
+        colors[i * 3 + 2] = c.b;
+      }
+      geom.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+      const paint = (m: Material) => {
         const mm = m.clone() as THREE.MeshStandardMaterial;
-        if (!isSzklo) {
-          if (mm.color) mm.color.set("#CF2E2E");
-          mm.metalness = 0.3;
-          mm.roughness = 0.38;
-          mm.envMapIntensity = 1.25;
-        } else if ("envMapIntensity" in mm) {
-          mm.envMapIntensity = Math.max(mm.envMapIntensity ?? 1, 1.3);
-        }
+        mm.vertexColors = true;
+        if (mm.color) mm.color.set("#ffffff");
+        mm.metalness = 0;
+        mm.roughness = 0.45;
+        mm.envMapIntensity = 0.3;
         mm.needsUpdate = true;
         return mm;
       };
       mesh.material = Array.isArray(mesh.material)
-        ? mesh.material.map(remap)
-        : remap(mesh.material);
+        ? mesh.material.map(paint)
+        : paint(mesh.material);
     });
 
-    // Normalise: the raw model is huge — centre it and scale to ~3.6 units.
+    // Normalise: centre + scale. Slightly smaller than before (2.6 → 2.2) so the
+    // model no longer touches the card edges.
     const box = new THREE.Box3().setFromObject(root);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
-    const s = 2.6 / (Math.max(size.x, size.y, size.z) || 1);
+    const s = 2.2 / (Math.max(size.x, size.y, size.z) || 1);
     root.scale.setScalar(s);
     root.position.copy(center.multiplyScalar(-s));
     return root;

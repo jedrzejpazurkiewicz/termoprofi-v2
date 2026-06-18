@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 
 import ScrollReveal from "@/components/animations/ScrollReveal";
@@ -5,6 +7,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Section from "@/components/ui/Section";
 import { PRODUCTS } from "@/lib/constants";
+import { motion } from "framer-motion";
 
 /**
  * Nasze produkty — the catalogue overview.
@@ -16,9 +19,11 @@ import { PRODUCTS } from "@/lib/constants";
  * well, then the tagline (tp-red eyebrow), name (Jost), description, tp-red dot
  * bullets, and a ghost "Zamów próbkę" CTA pinned to the bottom so cards align.
  *
- * The Card carries the warm hover lift; the image well runs its own scoped
- * `group/well` so the render zooms gently on hover (pure CSS, no JS). Reveals
- * stagger as the row enters view via ScrollReveal (reduced-motion aware).
+ * The H2 reveals word-by-word on scroll-into-view (the same staggered motion
+ * used by BridgeStat / EdgeApproach), reduced-motion-aware. The Card carries
+ * the warm hover lift; the image well runs its own scoped `group/well` so the
+ * render zooms gently on hover (pure CSS, no JS). Reveals stagger as the row
+ * enters view via ScrollReveal (reduced-motion aware).
  */
 
 /** Map product id → hero image (renders / photos live in /public/images). */
@@ -33,12 +38,57 @@ const PRODUCT_IMAGES: Record<string, { src: string; alt: string }> = {
   },
 };
 
+/** Split the H2 into individual words so each can fade + slide-up in sequence. */
+const HEADLINE_WORDS = "Kompletny system ciepłej krawędzi.".split(" ");
+
 export default function Products() {
+  const reduce =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   return (
     <Section id="produkty" eyebrow="Produkty" className="bg-zinc-600">
       <div className="max-w-2xl">
         <h2 className="text-balance font-jost text-display-sm font-bold leading-[1.05] text-ink">
-          Kompletny system ciepłej krawędzi.
+          {HEADLINE_WORDS.map((word, i) => (
+            <span key={`${word}-${i}`}>
+              <span className="inline-block overflow-hidden align-bottom">
+                <motion.span
+                  className={`inline-block${
+                    word === "ciepłej" ? " text-tp-red" : ""
+                  }`}
+                  initial={reduce ? false : { opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0 }}
+                  transition={{
+                    duration: 0.55,
+                    delay: i * 0.12,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              </span>
+              {i < HEADLINE_WORDS.length - 1 ? "\u00A0" : null}
+            </span>
+          ))}
+          {/* Trailing dot — animate with the last word so the period lands in step. */}
+          <span className="inline-block overflow-hidden align-bottom">
+            <motion.span
+              className="inline-block"
+              initial={reduce ? false : { opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0 }}
+              transition={{
+                duration: 0.55,
+                delay: HEADLINE_WORDS.length * 0.12,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              aria-hidden
+            >
+              .
+            </motion.span>
+          </span>
         </h2>
         <p className="mt-6 text-pretty text-lg leading-relaxed text-ink-2">
           Ramki dystansowe, szprosy i akcesoria — wszystko, czego potrzebuje
