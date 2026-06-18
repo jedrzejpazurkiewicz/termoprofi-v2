@@ -1,11 +1,7 @@
 "use client";
 
-import { useRef, createElement, type ReactNode } from "react";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger, useGSAP);
+import { createElement, Fragment, type ReactNode } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 
 export interface TextRevealProps {
   /** The text to reveal word-by-word. */
@@ -19,79 +15,46 @@ export interface TextRevealProps {
 }
 
 /**
- * Word-by-word masked reveal: each word rises from behind an overflow-clip line.
- * GSAP ScrollTrigger driven; reduced-motion shows the text statically.
+ * Word-by-word reveal: each word fades in and slides up 24px from behind an
+ * overflow-clip box, staggered, as it scrolls into view. Framer-motion
+ * `whileInView` driven — the exact same effect used in the EdgeApproach section
+ * ("Tędy ucieka ciepło. / Z każdego okna…"). Words are authored as real text
+ * content (no hidden duplicate); reduced-motion renders them instantly in place.
  */
 export function TextReveal({
   children,
   className,
   as = "span",
-  stagger = 0.05,
+  stagger = 0.15,
   delay = 0,
 }: TextRevealProps): ReactNode {
-  const ref = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
   const words = children.split(" ");
 
-  useGSAP(
-    () => {
-      const el = ref.current;
-      if (!el) return;
-
-      const reduce = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      const inner = el.querySelectorAll<HTMLElement>("[data-word-inner]");
-      if (reduce) {
-        gsap.set(inner, { yPercent: 0 });
-        return;
-      }
-
-      gsap.fromTo(
-        inner,
-        { yPercent: 115 },
-        {
-          yPercent: 0,
-          duration: 0.9,
-          delay,
-          ease: "power2.out",
-          stagger,
-          scrollTrigger: {
-            trigger: el,
-            start: "top 88%",
-            toggleActions: "play none none none",
-          },
-        },
-      );
-    },
-    { scope: ref },
-  );
-
   const visual = words.map((word, i) => (
-    <span
-      key={`${word}-${i}`}
-      className="inline-flex overflow-hidden align-bottom"
-      aria-hidden="true"
-    >
-      <span
-        data-word-inner
-        className="inline-block will-change-transform"
-        style={{ transform: "translateY(115%)" }}
-      >
-        {word}
+    <Fragment key={`${word}-${i}`}>
+      <span className="inline-block overflow-hidden align-bottom">
+        <motion.span
+          className="inline-block"
+          initial={reduce ? false : { opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0 }}
+          transition={{
+            duration: 0.5,
+            delay: delay + i * stagger,
+            ease: "easeOut",
+          }}
+        >
+          {word}
+        </motion.span>
       </span>
+      {/* Space between the clip boxes (parent flow) so it stays visible and the
+          line wraps naturally. */}
       {i < words.length - 1 ? " " : null}
-    </span>
+    </Fragment>
   ));
 
-  return createElement(
-    as,
-    { ref, className },
-    // Accessible, unsplit copy for screen readers.
-    <span key="sr" className="sr-only">
-      {children}
-    </span>,
-    visual,
-  );
+  return createElement(as, { className }, visual);
 }
 
 export default TextReveal;

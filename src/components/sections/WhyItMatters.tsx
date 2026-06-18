@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import BeatAnchor from "@/components/animations/BeatAnchor";
 import CountUp from "@/components/animations/CountUp";
+import TextReveal from "@/components/animations/TextReveal";
 import { MATERIALS, STATS } from "@/lib/constants";
 
 /**
@@ -58,10 +59,19 @@ export default function WhyItMatters() {
           <span className="text-eyebrow uppercase text-ink-2">
             Przewodność cieplna
           </span>
-          <h2 className="mt-5 text-balance font-jost text-display-sm font-bold leading-[1.05] text-black">
-            Cała różnica mieści się w{" "}
-            <span className="text-tp-red">jednym materiale.</span>
-          </h2>
+          <TextReveal
+            as="h2"
+            className="mt-5 text-balance font-jost text-display-sm font-bold leading-[1.05] text-white"
+          >
+            Cała różnica mieści się w
+          </TextReveal>
+          <TextReveal
+            as="h2"
+            delay={0.3}
+            className="text-balance font-jost text-display-sm font-bold leading-[1.05] text-tp-red"
+          >
+            jednym materiale.
+          </TextReveal>
         </header>
 
         <div className="mt-12 overflow-hidden rounded-3xl border border-hairline bg-surface/70 shadow-2xl shadow-black/40 backdrop-blur-md sm:mt-14">

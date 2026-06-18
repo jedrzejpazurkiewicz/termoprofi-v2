@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import Section from "@/components/ui/Section";
 import Button from "@/components/ui/Button";
 import ScrollReveal from "@/components/animations/ScrollReveal";
+import TextReveal from "@/components/animations/TextReveal";
 import ThermalCompare from "@/components/sections/ThermalCompare";
 import FiberthermModel from "@/components/sections/FiberthermModel";
 
@@ -67,12 +68,15 @@ export default function Fibertherm() {
       <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
         <ScrollReveal>
           <div>
-            <h2 className="text-balance font-jost text-display-sm font-bold text-black">
+            <TextReveal
+              as="h2"
+              className="text-balance font-jost text-display-sm font-bold text-black"
+            >
               Materiał, który zmienia regułę.
-            </h2>
+            </TextReveal>
             <div className="mt-7 max-w-prose space-y-5 text-pretty text-lg leading-relaxed text-ink-2">
               <p>
-                FIBERTHERM to ciepła ramka dystansowa nowej generacji —
+                <span className="text-tp-red">FIBERTHERM</span> to ciepła ramka dystansowa nowej generacji —
                 kompozyt wzmacniany włóknem szklanym w miejsce aluminium czy
                 stali. Tam, gdzie metal oddaje ciepło na zewnątrz, kompozyt je
                 zatrzymuje.

@@ -212,15 +212,6 @@ export function Contact() {
             </InfoRow>
           </div>
 
-          <div className="mt-10 overflow-hidden rounded-2xl border border-hairline">
-            <iframe
-              title="Lokalizacja PPH OKSAN — Lubartów"
-              src="https://www.google.com/maps?q=Strefowa%2030%2C%2021-100%20Lubart%C3%B3w&output=embed"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="h-56 w-full grayscale-[0.35] [color-scheme:light]"
-            />
-          </div>
         </ScrollReveal>
 
         {/* ----------------------------- PRAWA: formularz ---------------------- */}

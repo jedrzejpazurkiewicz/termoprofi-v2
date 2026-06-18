@@ -3,6 +3,7 @@
 import { useScroll, useTransform, useReducedMotion, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import BeatAnchor from "@/components/animations/BeatAnchor";
+import TextReveal from "@/components/animations/TextReveal";
 import { scroll } from "@/lib/scroll-store";
 
 /**
@@ -26,11 +27,11 @@ export default function Discovery() {
     offset: ["start start", "end end"],
   });
 
-  // The headline materialises in the central window of the scroll, then settles.
+  // The headline materialises in the central window of the scroll, then stays.
   const copyOpacity = useTransform(
     scrollYProgress,
-    [0.08, 0.32, 0.72, 0.94],
-    [0, 1, 1, 0.18],
+    [0.08, 0.32],
+    [0, 1],
   );
   const copyY = useTransform(scrollYProgress, [0.08, 0.4], [40, 0]);
   const accentWidth = useTransform(scrollYProgress, [0.2, 0.6], ["0%", "100%"]);
@@ -76,12 +77,19 @@ export default function Discovery() {
             className="max-w-lg text-left"
             style={reduceMotion ? undefined : { opacity: copyOpacity, y: copyY }}
           >
-            <p className="text-balance font-jost text-display-sm font-bold text-[#14171c]">
+            <TextReveal
+              as="p"
+              className="text-balance font-jost text-display-sm font-bold text-[#14171c]"
+            >
               Widzisz tę małą ramkę?
-            </p>
-            <p className="mt-3 text-balance font-jost text-display-sm font-bold text-tp-red">
+            </TextReveal>
+            <TextReveal
+              as="p"
+              delay={0.3}
+              className="mt-3 text-balance font-jost text-display-sm font-bold text-tp-red"
+            >
               To jest FIBERTHERM.
-            </p>
+            </TextReveal>
             <motion.span
               aria-hidden
               className="mt-8 block h-px max-w-xs bg-gradient-to-r from-tp-red/70 to-transparent"

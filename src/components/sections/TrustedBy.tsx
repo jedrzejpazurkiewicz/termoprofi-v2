@@ -8,6 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import Section from "@/components/ui/Section";
 import ScrollReveal from "@/components/animations/ScrollReveal";
+import TextReveal from "@/components/animations/TextReveal";
 import { COUNTRIES } from "@/lib/constants";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -74,7 +75,7 @@ export default function TrustedBy() {
 
   return (
     <Section id="zaufali" className="bg-zinc-600">
-      <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
+      <div data-map-group className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
         {/* LEFT — distribution map */}
         <ScrollReveal y={28}>
           <figure className="group relative">
@@ -110,21 +111,22 @@ export default function TrustedBy() {
                     (środki kropek), nie z geografii. Każde halo startuje z
                     lekkim opóźnieniem → efekt fali. */}
                 {[
-                  { iso2: "CA", x: 18, y: 15 },
-                  { iso2: "KR", x: 38, y: 19 },
-                  { iso2: "PL", x: 67, y: 56 },
-                  { iso2: "DE", x: 62, y: 59 },
-                  { iso2: "UA", x: 75, y: 63 },
-                  { iso2: "RO", x: 73, y: 70 },
-                  { iso2: "IT", x: 61, y: 73 },
-                  { iso2: "BG", x: 73, y: 75 },
-                  { iso2: "XK", x: 69, y: 76 },
-                  { iso2: "PT", x: 44, y: 81 },
+                  { iso2: "CA", flag: "🇨🇦", x: 18, y: 15 },
+                  { iso2: "KR", flag: "🇰🇷", x: 38, y: 19 },
+                  { iso2: "PL", flag: "🇵🇱", x: 67, y: 56 },
+                  { iso2: "DE", flag: "🇩🇪", x: 62, y: 59 },
+                  { iso2: "UA", flag: "🇺🇦", x: 75, y: 63 },
+                  { iso2: "RO", flag: "🇷🇴", x: 73, y: 70 },
+                  { iso2: "IT", flag: "🇮🇹", x: 61, y: 73 },
+                  { iso2: "BG", flag: "🇧🇬", x: 73, y: 75 },
+                  { iso2: "XK", flag: "🇽🇰", x: 69, y: 76 },
+                  { iso2: "PT", flag: "🇵🇹", x: 44, y: 81 },
                 ].map((pin, i) => (
                   <div
                     key={pin.iso2}
-                    aria-hidden
-                    className="pointer-events-none absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2"
+                    data-country={pin.iso2}
+                    aria-label={`${pin.iso2} — dystrybucja FIBERTHERM`}
+                    className="group/pin pointer-events-auto absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2 cursor-default"
                     style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
                   >
                     <span
@@ -134,6 +136,15 @@ export default function TrustedBy() {
                         animationDuration: "2.4s",
                       }}
                     />
+                    {/* Flag — drops from above on hover. Hidden at rest, slides in
+                        with a soft bounce so it reads as a "flag landing on the pin". */}
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl leading-none opacity-0 -translate-y-[150%] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover/pin:opacity-100 group-hover/pin:translate-y-[-50%] group-focus-visible/pin:opacity-100 group-focus-visible/pin:translate-y-[-50%] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
+                      style={{ fontFamily: '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif' }}
+                    >
+                      {pin.flag}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -154,11 +165,19 @@ export default function TrustedBy() {
               </span>
             </div>
 
-            <h2 className="mt-6 text-balance font-jost text-display-sm font-bold leading-[1.05] text-ink">
-              {MARKET_COUNT} krajów.
-              <br />
-              <span className="text-ink-2">3 kontynenty.</span>
-            </h2>
+            <TextReveal
+              as="h2"
+              className="mt-6 text-balance font-jost text-display-sm font-bold leading-[1.05] text-ink"
+            >
+              {`${MARKET_COUNT} krajów.`}
+            </TextReveal>
+            <TextReveal
+              as="h2"
+              delay={0.3}
+              className="text-balance font-jost text-display-sm font-bold leading-[1.05] text-tp-red"
+            >
+              3 kontynenty.
+            </TextReveal>
 
             <p className="mt-6 max-w-md text-pretty text-base leading-relaxed text-ink-2">
               {INTRO}
@@ -174,13 +193,16 @@ export default function TrustedBy() {
             {COUNTRIES.filter((c) => c.iso2 !== "").map((country) => (
               <div
                 key={country.iso2}
-                className="flex items-center gap-3 border-b border-hairline/70 py-3"
+                data-country={country.iso2}
+                className="country-row flex items-center gap-3 border-b border-hairline/70 py-3 transition-colors duration-200"
               >
                 <span
                   aria-hidden
-                  className="h-1.5 w-1.5 shrink-0 rounded-full bg-tp-red shadow-[0_0_10px_rgba(207,46,46,0.6)]"
+                  className="country-dot h-1.5 w-1.5 shrink-0 rounded-full bg-tp-red shadow-[0_0_10px_rgba(207,46,46,0.6)] transition-all duration-200"
                 />
-                <span className="text-sm text-ink">{country.name}</span>
+                <span className="country-name text-sm text-ink transition-colors duration-200">
+                  {country.name}
+                </span>
               </div>
             ))}
           </ScrollReveal>

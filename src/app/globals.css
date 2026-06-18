@@ -46,6 +46,46 @@
     overflow-x: hidden;
   }
 
+  /* Cross-element hover for the TrustedBy map: hovering a pin on the map OR
+     a country name in the list highlights BOTH. Pure CSS via :has() — no JS
+     needed. Works because every pin and every country row share a
+     data-country="<iso2>" attribute under one [data-map-group] container. */
+  [data-map-group]:has([data-country="CA"]:hover) [data-country="CA"],
+  [data-map-group]:has([data-country="KR"]:hover) [data-country="KR"],
+  [data-map-group]:has([data-country="PL"]:hover) [data-country="PL"],
+  [data-map-group]:has([data-country="DE"]:hover) [data-country="DE"],
+  [data-map-group]:has([data-country="UA"]:hover) [data-country="UA"],
+  [data-map-group]:has([data-country="RO"]:hover) [data-country="RO"],
+  [data-map-group]:has([data-country="IT"]:hover) [data-country="IT"],
+  [data-map-group]:has([data-country="BG"]:hover) [data-country="BG"],
+  [data-map-group]:has([data-country="XK"]:hover) [data-country="XK"],
+  [data-map-group]:has([data-country="PT"]:hover) [data-country="PT"] {
+    .country-name,
+    & .country-name {
+      color: #ffffff;
+      text-shadow: 0 0 12px rgba(232, 236, 241, 0.35);
+    }
+    .country-dot,
+    & .country-dot {
+      transform: scale(2.4);
+      box-shadow: 0 0 22px rgba(207, 46, 46, 1);
+    }
+  }
+
+  /* When hovering a map pin, the pin itself grows a bit. */
+  [data-map-group]:has([data-country="CA"]:hover) [data-country="CA"][class*="group/pin"],
+  [data-map-group]:has([data-country="KR"]:hover) [data-country="KR"][class*="group/pin"],
+  [data-map-group]:has([data-country="PL"]:hover) [data-country="PL"][class*="group/pin"],
+  [data-map-group]:has([data-country="DE"]:hover) [data-country="DE"][class*="group/pin"],
+  [data-map-group]:has([data-country="UA"]:hover) [data-country="UA"][class*="group/pin"],
+  [data-map-group]:has([data-country="RO"]:hover) [data-country="RO"][class*="group/pin"],
+  [data-map-group]:has([data-country="IT"]:hover) [data-country="IT"][class*="group/pin"],
+  [data-map-group]:has([data-country="BG"]:hover) [data-country="BG"][class*="group/pin"],
+  [data-map-group]:has([data-country="XK"]:hover) [data-country="XK"][class*="group/pin"],
+  [data-map-group]:has([data-country="PT"]:hover) [data-country="PT"][class*="group/pin"] {
+    transform: translate(-50%, -50%) scale(1.4);
+  }
+
   /* Atmospheric page backdrop: deep near-black with layered, faint radial glows.
      Fixed so it reads as depth behind the scrolling content, never flat. */
   body::before {
