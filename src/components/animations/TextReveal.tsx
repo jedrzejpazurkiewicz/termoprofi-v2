@@ -33,7 +33,7 @@ export function TextReveal({
 
   const visual = words.map((word, i) => (
     <Fragment key={`${word}-${i}`}>
-      <span className="inline-block overflow-hidden align-bottom">
+      <span className="inline-block align-bottom">
         <motion.span
           className="inline-block"
           initial={reduce ? false : { opacity: 0, y: 24 }}
